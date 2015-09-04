@@ -1,0 +1,43 @@
+<apex:component >
+                                                 
+<style>                                                 
+    .tooltip:hover {
+        background-image : #FEFDB9; /*BG color is a must for IE6*/
+        text-align: right ;         
+        text-decoration:none;
+    } 
+    a.tooltip span {
+        display:none; 
+        padding:2px 3px;
+        margin : 23px 0px 0px -210px;
+        width:195px;
+    }
+    a.tooltip:hover span{
+        z-index: 100;
+        display:inline; 
+        text-align : left;
+        position:absolute; 
+        background:#FEFDB9; 
+        border:1px solid #FFA603; 
+        color:#000000;
+    }
+    
+    .toolttipimg:hover{  
+            background-image: url('/img/help/helpOrbs.gif');  
+            background-repeat: no-repeat; 
+            width: 16px;  
+            height: 15px;    
+            background-position: top right;  
+         
+        }  
+    .toolttipimg{  
+            background-image: url('/img/help/helpOrbs.gif');  
+            background-repeat: no-repeat;
+            padding-right : 3px; 
+            background-position : top left ; 
+            width: 16px;  
+            height: 15px;   
+        } 
+</style>
+
+</apex:component>

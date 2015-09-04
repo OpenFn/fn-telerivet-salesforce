@@ -1,0 +1,150 @@
+<apex:page sidebar="false" docType="html-5.0" controller="ctr_mockup" >
+<style>
+/* Base colors : #385723 , #1F4E79 */
+
+.center{
+text-align : center;
+}
+
+td{
+ padding : 0px 0px 10px 10px;
+}
+
+#mainBody{
+ width : 98%;
+ possition : absolute ;
+ padding : 10px 10px 10px 10px;
+ text-align : center;
+ overflow : hidden; 
+
+}
+
+#topDiv{
+ width : 100%;
+ padding : 8px 10px 11px 8px;
+ text-align : left;
+ background-color : #385723 ;
+ color : #ffffff;
+ height : 13px;
+ font-weight : bold;
+}
+
+#tableContent{
+ width : 100%;
+ padding : 15px 10px 11px 10px;
+ text-align : left;
+}
+
+.tabDiv{
+ width : 100%;
+ padding : 2px 10px 8px 16px;
+ margin-bottom : 14px;
+ text-align : left;
+ background-image : url({!$Resource.arrow_right}) ;
+ background-repeat: no-repeat;
+ background-position: left center;
+ background-size: 14px 14px;
+ background-color : #1F4E79 ;
+ color : #ffffff;
+ border : 5px solid #1F4E79 ;
+ height : 10px;
+ font-weight : bold;
+}
+
+.tabDiv:hover{
+ background-image : url({!$Resource.arrow_down}) ;
+ border : 5px solid #1F4E79 ;
+}
+
+
+</style>
+
+<apex:form >
+<div id="mainBody" class="center">
+
+    <div id="topDiv" >
+        Application for Funding from The Learning Trust
+    </div>
+    
+    <div id="tableContent">
+        <table>
+            <tr>
+                <td>
+                    <b>Name of Applicant</b>
+                </td>
+                <td>
+                    Ann Smith
+                </td>
+                <td>
+                    <b>Position of Applicant</b>
+                </td>
+                <td>
+                    CEO
+                </td>
+                <td>
+                    <b>Applicant’s Mobile</b>
+                </td>
+                <td>
+                    0783626475
+                </td>
+            </tr>       
+                        <tr>
+                <td>
+                    <b>Date of Initial Application</b>
+                </td>
+                <td>
+                    <apex:input type="date" value="{!myDate }" />
+                </td>
+                <td>
+                    <b>Date of Most Recent TLT Notes</b>
+                </td>
+                <td>
+                    <apex:input type="date" value="{!myDate }"  /> 
+                </td>
+                <td>
+                    <b>Date of Most Recent Grantee Edits</b>
+                </td>
+                <td>
+                    <apex:input type="date" value="{!myDate }"  />
+                </td>
+            </tr> 
+        </table>
+    
+    </div>
+    
+    <div id="bodyTabs">    
+       
+       <div class="tabDiv">
+       <div>Application Information</div>
+       </div>
+              
+       <div class="tabDiv">
+       <div>Key Metrics</div>
+       </div>              
+
+       <div class="tabDiv">
+       <div>Strategy &amp; Monitoring and Evaluation Checklist</div>
+       </div>       
+       
+       <div class="tabDiv">
+       <div>Financial Controls &amp; ICT Checklist</div>
+       </div>
+       
+       <div class="tabDiv">
+       <div>Self-Review of Organizational Development</div>
+       </div>
+       
+       <div class="tabDiv">
+       <div>Appendices</div>
+       </div>
+       
+       <div class="tabDiv">
+       <div>TLT Review</div>
+       </div>                           
+       
+    </div>
+
+
+</div>
+</apex:form>
+</apex:page>

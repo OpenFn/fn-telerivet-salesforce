@@ -1,0 +1,719 @@
+<apex:page sidebar="false" showHeader="true" docType="html-5.0" standardController="Page__c" extensions="ctrl_cecr_edit">
+
+<head>
+    <!-- FLAT UI =============================-->
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/jquery-1.8.3.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/jquery-ui-1.10.3.custom.min.js')}" /> 
+    <apex:includeScript value="{!URLFOR( 'https://code.jquery.com/ui/1.11.2/jquery-ui.js')}" />
+
+    <!--<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css"/>   
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script> 
+    <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script> -->
+    
+    
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/jquery.ui.touch-punch.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/bootstrap.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/bootstrap-select.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/bootstrap-switch.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/flatui-checkbox.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/flatui-radio.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/jquery.tagsinput.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/jquery.placeholder.js')}" />    
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/holder.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/flatui-fileinput.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/typeahead.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/application.js')}" /> 
+    
+    <apex:stylesheet value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/bootstrap/css/bootstrap.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/css/flat-ui.css')}"/>
+    
+    
+    <!-- FANCY BOX =============================-->
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, 'fancybox/jquery.fancybox.pack.js')}" /> 
+    <apex:stylesheet value="{!URLFOR($Resource.flatui_v1, 'fancybox/jquery.fancybox.css')}" />   
+   
+   
+    
+
+    <style>
+    
+        .flushRight{
+            text-align : right;
+        }
+
+        .flushLeft{
+            text-align : left;
+        } 
+        
+        .flushCenter{
+            text-align: center;
+            padding : 3px 0px 3px 0px;
+            width: 100%;
+            margin : 3px 0px 3px 0px;  
+        }
+        
+        .tablePaddingSelect {
+            margin-top : 6px;
+        }  
+        
+        .bufferTd{
+            min-width: 20px;
+            padding-left:5px;
+        }    
+        
+        .tableSelect{
+            margin-top : -2px;
+        } 
+        
+        .tableSelectReq{
+            margin-top : -2px;
+        } 
+        
+        .required{
+            background-color : red;            
+            height : 30px;
+            margin-right : 5px;
+            //margin-top : -3px;
+            
+            width : 3px;
+            //float:left;
+            display: table;
+        }
+        
+        .inputError{
+            border : 2px solid #e74c3c;
+        }
+        
+        
+        .extraPadding{
+            padding : 0px 5px 0px 5px;
+            width: 250px;
+            text-align: center;
+        }
+               
+        //#sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+        //#sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+        //#sortable li span { position: absolute; margin-left: -1.3em; }
+
+    </style> 
+
+</head>
+
+<body>
+<div class="uicontainer" id="mainContainer">
+
+<script>
+  $("#mainContainer").hide();
+</script>
+
+<apex:form id="frm">
+
+    <!-- ACTION FUNCTION BLOCK-->
+    
+    <apex:actionFunction id="afAddRow" name="afAddRow" action="{!addRow}" status="Status" reRender="tab1apex,tab2apex,tab3apex,jsUI">
+        <apex:param name="indexDelete" value=""/>
+    </apex:actionFunction>
+        
+    <apex:actionFunction id="afDeleteRow" name="afDeleteRow"  action="{!deleteRow}" status="Status" reRender="tab1apex,tab2apex,tab3apex,jsUI">
+        <apex:param name="indexDelete" value=""/>
+    </apex:actionFunction>
+
+    <apex:actionFunction id="afSave" name="afSave"  action="{!save}" >        
+    </apex:actionFunction>
+    
+    <!-- ACTION FUNCTION BLOCK-->
+    
+    
+    <!-- ERROR SECTION -->
+    <apex:outputPanel rendered="{!isError}" >
+        <div class="alert alert-error">
+            <button type="button" class="close fui-cross" data-dismiss="alert"></button>
+            <h4>Error!</h4>
+            <p>{!errorText }.</p>        
+        </div>    
+    </apex:outputPanel>
+    <!-- ERROR SECTION -->   
+
+
+    <ul class="nav nav-tabs nav-append-content">
+        <li id="tab1li" class="active"><a href="#tab1">Page Settings</a></li>
+        <li id="tab2li" class=""><a href="#tab2">Field Settings</a></li>
+        <li id="tab3li" class=""><a href="#tab3">Order By Settings</a></li>
+        <li id="tab4li" class=""><a href="#tab4">Button Code</a></li>                
+    </ul> <!-- /tabs -->
+
+    
+    <apex:variable id="varCount" var="count" value="{!0}"/> 
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="tab1">
+            <apex:outputPanel id="tab1apex">
+                <table id="tab2table">
+                    <!-- PAGE MODES-->
+                    <tr>
+                        <td><b class="uicontainer" style="font-size:90%;">Page Mode</b>
+                        </td>
+                        <td class="bufferTd">
+                            <span data-toggle="tooltip" data-placement="bottom"  data-original-title="Should this page allow editing of existing records, or only creation of new records? If this page is only creating new records, are they all linked to a common parent (e.g. new students in a particular batch) or are they independent (e.g. work logs)?" class="fui-question pull-right" style="color: #3498db;"></span>                           
+                        </td>
+                        <td class="extraPadding">
+                            <apex:selectList styleClass="tablePaddingSelect" value="{!objPage.Page_Mode__c}">
+                                <apex:selectOptions value="{!lstPageModes}"></apex:selectOptions>
+                            </apex:selectList>                 
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>                                                            
+                    </tr>
+                    <!-- PARENT OBJECT-->
+                    <tr>
+                        <td><b class="uicontainer" style="font-size:90%;">Parent Object</b>
+                        </td>
+                        <td class="bufferTd" > 
+                            <sup style="color : red; font-size:100%; ">*</sup>   
+                            <span data-toggle="tooltip" data-placement="bottom"  title="What is the parent object API name?" class="fui-question pull-right" style="color: #3498db;"></span>                           
+                        </td>
+                        <td class="extraPadding">
+                            <apex:selectList id="parentObjName" styleClass="tablePaddingSelect" value="{!objPage.Parent_Object_API_Name__c}">
+                                <apex:selectOptions value="{!lstSobjectName}"></apex:selectOptions>
+                                <apex:actionSupport event="onchange" status="Status" reRender="tab1apex,tab2apex,tab3apex,jsUI" / > 
+                            </apex:selectList>               
+                        </td>
+                        <td class="bufferTd">                            
+                        </td>
+                        <td>
+                        </td>
+                        <td class="bufferTd">                                                                 
+                        </td>
+                        <td >                                      
+                        </td>
+                    </tr>
+                    <!-- CHILD OBJECT -->
+                     <tr>
+                        <td><b class="uicontainer" style="font-size:90%;">Child Object</b>
+                        </td>
+                        <td class="bufferTd" >  
+                            <sup style="color : red; font-size:100%; ">*</sup> 
+                            <span data-toggle="tooltip" data-placement="bottom"  title="What is the API name of the child object?" class="fui-question pull-right" style="color: #3498db;"></span>                                                                                     
+                        </td>
+                        <td class="extraPadding">
+                            <apex:selectList id="childObjName" styleClass="tablePaddingSelect" value="{!objPage.Child_Object_API_Name__c}">
+                                <apex:selectOptions value="{!lstSobjectName}"></apex:selectOptions>
+                                <apex:actionSupport event="onchange" status="Status" reRender="tab1apex,tab2apex,tab3apex,jsUI" / > 
+                            </apex:selectList>                                            
+                        </td>
+                        <td class="bufferTd">                            
+                        </td>
+                        <td><b class="uicontainer" style="font-size:90%;">Lookup Field</b>
+                        
+                        </td>
+                        <td class="bufferTd">   
+                            <span data-toggle="tooltip" data-placement="bottom"  title="What is the API name of the child-to-parent lookup field?" class="fui-question pull-right" style="color: #3498db;"></span>                                                                                         
+                        </td>
+                        <td class="extraPadding">
+                             <apex:selectList styleClass="tablePaddingSelect" value="{!objPage.Lookup_Field_API_Name__c }">
+                                <apex:selectOptions value="{!lstSobjectFields}"></apex:selectOptions>
+                             </apex:selectList> 
+                                         
+                        </td>
+                    </tr>
+                    <!-- RECORD TYPE-->
+                    <tr>
+                        <td ><b class="uicontainer" style="font-size:90%;">Record Type</b>
+                        </td>
+                        <td class="bufferTd">
+                           <span  data-toggle="tooltip" data-placement="bottom"  title="If the records edited or created should be of a particular record type, enter the developer name here." class="fui-question pull-right" style="color: #3498db;"></span>                           
+                        </td>
+                        <td class="extraPadding">
+                            <apex:selectList styleClass="tablePaddingSelect" value="{!objPage.Record_Type__c}">
+                                <apex:selectOptions value="{!lstRecordTypes}"></apex:selectOptions>
+                            </apex:selectList>                 
+                        </td>                  
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>           
+                </table>
+            </apex:outputPanel>
+            
+        </div>
+
+        <!-- /tabs -->
+        <div class="tab-pane" id="tab2">
+        
+            <apex:outputPanel id="tab2apex">
+            <apex:variable id="varIndex" var="indexDelete" value="{!0}"/> 
+            <apex:inputText style="display: none;" id="varDNDOrder"  value="{!varDNDOrder}" />
+            <input type="hidden" id="deleteVar" value=""/>
+            
+            <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>Field</th>
+                    <th>Use field label for column header?<!--&nbsp;&nbsp;&nbsp;<span data-toggle="tooltip" data-placement="bottom"  title="Should the column header display the field label, or some other value? Leave blank to use the field label." class="uicontainer fui-question" style="color: #3498db;"></span>--></th>
+                    <th>Input/Output<!--&nbsp;&nbsp;&nbsp;<span data-toggle="tooltip" data-placement="bottom"  title="Should this field be input (editable) or output (non-editable)?" class="fui-question" style="color: #3498db;"></span>--></th>
+                    <th>Required<!--&nbsp;&nbsp;&nbsp;<span data-toggle="tooltip" data-placement="bottom"  title="Should this field be required?" class="fui-question" style="color: #3498db;"></span>--></th>
+                    <!--<th>Lookup field</th>-->                    
+                  </tr>
+                </thead>
+                <tbody  id="sortable">                               
+                
+                <apex:repeat value="{!lstFields}" var="fields">
+
+                  <!-- MAIN ROW TEMPLATE-->                  
+                  <tr style="cursor:url({!$Resource.cursor}),auto;">
+                    <td>
+                        <!--<img src="" style="border: none; margin-left : -10px; width : 3px; height : 20px; background: red;" class="pull-left"/>-->
+                        <a href="#fakelink" style=" visibility : {!if(indexDelete == lstFields.size - 1, '', 'hidden')};" onclick="AddRow('{!indexDelete}');"><span  class="fui-plus pull-left"></span></a>&nbsp;
+                        <a href="#popUpRUS" style=" visibility : {!if(lstFields.size == 1, 'hidden', '')};" id="btnDelete" onclick="DeleteRow('{!indexDelete}');"><span style="margin-left:5px;" class="fui-trash pull-left"></span></a>
+                        <apex:inputField style="display: none;" styleClass="DNDCounter" value="{!fields.Field_Order__c}" />
+                    </td>
+                    <td>                                                
+                        <apex:selectList onchange="resetHeadLabel( this );" StyleClass="tableSelectReq" value="{!fields.Name}">
+                            <apex:selectOptions value="{!lstSobjectFields}"></apex:selectOptions>
+                        </apex:selectList> 
+                        <sup style="color : red; font-size:100%; margin-left: 225px; margin-top:-16px; display:block; position:relative; ">*</sup>                              
+                        <!--<apex:outputLabel style="margin-top : 3px;"> <span style="font-size:100%;" class="label label-inverse">Gender__c</span></apex:outputLabel> -->
+                    </td>
+                    <td>                         
+                        <apex:inputCheckbox onchange="setHeaderlbl( this, 'Field Label' );" /> 
+                        <apex:inputText html-placeholder="Header, if different than label" Styleclass="reqTextBox form-control input-sm" value="{!fields.Column_Header_Override__c}" style="margin: -27px 0px 0px 30px; width:200px;"  />                        
+                        <sup style="color : red; font-size:100%; margin-left: 235px; margin-top:-13px; display:block; position:relative; ">*</sup>                              
+
+                    </td>
+                    <td>
+                        <apex:selectList StyleClass="tableSelect" value="{!fields.Input_or_Output__c}" >
+                            <apex:selectOptions value="{!lstIO}"></apex:selectOptions>
+                        </apex:selectList>  
+                    </td>
+                    <td>
+                        <apex:inputCheckbox value="{!fields.Required__c}" />
+                    </td>
+                    <!--<td>
+                        <apex:inputCheckbox />
+                        
+                    </td>
+                    -->
+                    <apex:variable var="indexDelete" value="{!indexDelete+1}"/>
+                  </tr>
+                  <!-- MAIN ROW TEMPLATE-->                  
+                  
+                 </apex:repeat> 
+                </tbody>
+              </table>
+              </apex:outputPanel>
+        </div>
+
+        <!-- /tabs -->
+        
+        <div class="tab-pane" id="tab3">
+        <apex:outputPanel id="tab3apex">
+              <table>
+                <!-- ORDER BY SETTINGS-->
+                <tr>
+                    <td><b class="uicontainer" style="font-size:90%;">Field</b>
+                    </td>
+                    <td class="bufferTd">
+                        <span data-toggle="tooltip" data-placement="bottom"  title="By which field should the existing records be ordered (if the page mode is set to 'Edit existing records')? The default is the standard Name field." class="fui-question pull-right" style="color: #3498db;"></span>                                                                                     
+                    </td>
+                    <td class="extraPadding"><apex:selectList styleClass="tablePaddingSelect" value="{!objPage.Order_By_Field__c}">
+                        <apex:selectOptions value="{!lstSobjectFields}"></apex:selectOptions>
+                    </apex:selectList>                 
+                    </td>
+                 </tr> 
+                    
+                 <tr>   
+                    <td><b class="uicontainer" style="font-size:90%;">Direction</b>
+                    </td>
+                    <td class="bufferTd">
+                        <span data-toggle="tooltip" data-placement="bottom"  title="Should the records be ordered ascending or descending?" class="fui-question pull-right" style="color: #3498db;"></span>                                                                                     
+                    </td>
+                    <td class="extraPadding"><apex:selectList styleClass="tablePaddingSelect" value="{!objPage.Order_By_Direction__c}">
+                        <apex:selectOptions value="{!lstDir}"></apex:selectOptions>
+                    </apex:selectList>                 
+                    </td>
+                 </tr>  
+                 
+                 <tr>      
+                    <td><b class="uicontainer" style="font-size:90%;">Null Handling</b>
+                    </td>
+                    <td class="bufferTd">
+                        <span data-toggle="tooltip" data-placement="bottom"  title="Should records with a null value in the order-by field be displayed first or last?" class="fui-question pull-right" style="color: #3498db;"></span>                                                                                     
+                    </td>
+                    <td class="extraPadding"><apex:selectList styleClass="tablePaddingSelect" value="{!objPage.Order_By_Null_Handling__c}">
+                        <apex:selectOptions value="{!lstNullHandle}"></apex:selectOptions>
+                    </apex:selectList>                 
+                    </td>                                                                                
+                </tr>
+              </table>                
+        </apex:outputPanel>
+        
+        </div>
+      <!-- /tab-content -->
+     
+     <div class="tab-pane" id="tab4">
+         <apex:outputPanel id="tab4apex">
+        <table>
+                        <tr>
+                    <td><b class="uicontainer" style="font-size:90%;">Custom Button URL</b>
+                    </td>
+                    <td class="bufferTd">
+                        <span data-toggle="tooltip" data-placement="bottom"  title="Important: there is an extra space in this URL text that must be removed before use: between the { and ! that come just before the parent object API name. This is because Salesforce wasn't letting us generate a link that included the merge fields." class="fui-question pull-right" style="color: #3498db;"></span>                                                                                     
+                    </td>
+                    <td class="uicontainer"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<apex:outputField value="{!objPage.Custom_Button_URL__c}"/>
+                                        
+                    </td>
+                 </tr>
+                 </table>
+                 </apex:outputPanel>
+                 </div>
+                 </div>
+
+
+     <div class="flushCenter">
+         <!--<a href="#tab2" class="btn btn-sm btn-info btn-embossed "><b><span class="fui-arrow-left"></span> Prev</b></a> --> 
+         <a href="#popUpAlert" id="btnCancel" class="btn btn-sm btn-warning btn-embossed "><b><span class="fui-cross-inverted"></span> Cancel </b></a>  &nbsp;         
+         <a onclick="save();"  class="btn btn-sm btn-success btn-embossed "><b><span class="fui-check-inverted"></span> Save </b></a>
+         <!-- <a href="#tab2" class="btn btn-sm btn-info btn-embossed "><b>Next <span class="fui-arrow-right"></span></b></a>   -->                      
+     </div>
+
+     
+<apex:outputPanel id="jsUI">
+    
+    
+<script>
+  
+
+$( document ).ready(function() {
+    
+    flatUISetUp();    
+    dragndrop();   
+    setFancyBox();
+    setDNDCounter();
+    
+    $ = jQuery.noConflict();
+    $('[data-toggle="tooltip"]').each(function( index ) {        
+        $(this).tooltip('hide');
+    }); 
+    
+    $("#mainContainer").show();
+    
+});
+/*---------------UI SETUP--------------*/
+
+function setDNDCounter(){
+    
+    $ = jQuery.noConflict();
+    var varCounter = 0 ;
+    $(".DNDCounter").each(function( index ) {
+        $(this).val(varCounter );
+        varCounter++;
+    });
+}
+    
+function setValueTovarDNDOrder(){
+
+    $ = jQuery.noConflict();
+    var varOrder = '';
+    $(".DNDCounter").each(function( index ) {
+        
+        if(varOrder == ''){
+            varOrder = varOrder + $(this).val();
+        }
+        else{
+            varOrder = varOrder + '#' + $(this).val();
+        }                
+    });
+    $("[id$=varDNDOrder]").val(varOrder);
+    //alert($("[id$=varDNDOrder]").val());
+    
+    return true;
+    
+}    
+    
+    
+function flatUISetUp(){
+
+$ = jQuery.noConflict();
+$(".tablePaddingSelect").selectpicker({style: 'btn dropdown-toggle btn-sm btn-primary btn-embossed', menuStyle: 'dropdown-inverse'});
+$(".tableSelect").selectpicker({style: 'btn dropdown-toggle btn-xs btn-primary btn-embossed', menuStyle: 'dropdown-inverse'});
+$(".tableSelectReq").selectpicker({style: 'btn dropdown-toggle btn-xs btn-primary btn-embossed', menuStyle: 'dropdown-inverse'});
+
+$(":checkbox").wrap( '<label style="margin-left: 3px;" class="checkbox" for="checkbox1"></label>' );
+$(":checkbox").checkbox();
+$("label[class=checkbox]").css('width', '20px');
+
+$('[data-toggle="tooltip"]').tooltip();
+
+}
+
+/*-------------UI SETUP END------------*/  
+
+
+/*-------------DRAG N DROP------------*/ 
+function dragndrop(){
+
+    $ = jQuery.noConflict();
+    $( "#sortable" ).sortable();
+    $( "#sortable" ).disableSelection();
+
+}
+/*-------------DRAG N DROP END------------*/ 
+
+             
+/*---------------CANCEL REDIRECT--------------*/               
+function moveOut(){
+    
+    $.fancybox.close();
+    $("body").hide();
+    $("#alertYes").attr('href' , window.location.protocol+"//"+window.location.host+"/home/home.jsp");
+    //alert(window.location.protocol+"//"+ window.location.host+ {!cancelURL });
+    window.top.location.href = window.location.protocol+"//"+window.location.host+ "{!cancelURL }"
+}
+/*-------------CANCEL REDIRECT END------------*/               
+
+/*-------------FANCY BOX------------*/ 
+
+function setFancyBox(){
+
+ /* This is basic - uses default settings */
+    $ = jQuery.noConflict();
+    $("#btnCancel").fancybox({
+       'closeBtn' : false,
+        'modal' : true,
+        'closeClick' : false,
+        'padding' : [5,5,2,5]
+    });
+    
+    $("#btnDelete").fancybox({
+        'closeBtn' : false,
+        'modal' : true,
+        'closeClick' : false,
+        'padding' : [5,5,2,5]
+    });         
+    
+}
+
+/*------------FANCY BOX END---------*/ 
+
+
+/*-------------DELETE ROW------------*/ 
+
+function DeleteRow2(){
+    $ = jQuery.noConflict();
+    afDeleteRow($("#deleteVar").val());    
+    $.fancybox.close();
+}
+
+function DeleteRow(indexDelete) {
+    $ = jQuery.noConflict();
+    setDNDCounter();
+    setValueTovarDNDOrder();   
+    $("#deleteVar").val(indexDelete);        
+}
+
+/*-------------ADD ROW------------*/ 
+function AddRow(indexDelete) { 
+    setDNDCounter();
+    setValueTovarDNDOrder();   
+    afAddRow();
+}
+
+/*----------VALIDATE SAVE---------*/
+function save(){
+
+    var continueSave = true ;
+    $ = jQuery.noConflict();
+    if( $("[id$=childObjName]").val() == ''){        
+        
+        $("[id$=childObjName]").next().children("[data-toggle=dropdown]").removeClass( "btn-primary" );
+        $("[id$=childObjName]").next().children("[data-toggle=dropdown]").addClass("btn-danger");
+        
+        $("#tab1li").addClass("active");
+        $("#tab2li").removeClass("active");
+        $("#tab3li").removeClass("active");
+        
+        $("#tab1").addClass("active");
+        $("#tab2").removeClass("active");
+        $("#tab3").removeClass("active");
+                
+        continueSave = false;    
+        //alert('False from 0');            
+    }
+    
+    if( $("[id$=parentObjName]").val() == ''){
+        
+        $("[id$=parentObjName]").next().children("[data-toggle=dropdown]").removeClass( "btn-primary" );
+        $("[id$=parentObjName]").next().children("[data-toggle=dropdown]").addClass("btn-danger");
+        
+        $("#tab1li").addClass("active");
+        $("#tab2li").removeClass("active");
+        $("#tab3li").removeClass("active");
+        
+        $("#tab1").addClass("active");
+        $("#tab2").removeClass("active");
+        $("#tab3").removeClass("active");        
+                
+        continueSave = false; 
+        //alert('False from 1');       
+    }  
+    
+    $( "select.tableSelectReq" ).each(function( index ) {
+      
+      if($(this).val() == ''  ){
+        
+        $(this).next().children("[data-toggle=dropdown]").removeClass( "btn-primary" );                
+        $(this).next().children("[data-toggle=dropdown]").addClass("btn-danger"); 
+        
+        if( continueSave == true){
+            $("#tab1li").removeClass("active");
+            $("#tab2li").addClass("active");
+            $("#tab3li").removeClass("active");
+            
+            $("#tab1").removeClass("active");
+            $("#tab2").addClass("active");
+            $("#tab3").removeClass("active");
+        }
+                                      
+        continueSave = false;  
+        //alert('False from 2');
+
+      }     
+            
+    });
+    
+    $( ".reqTextBox" ).each(function( index ) {
+                  
+          if( $(this).val() == '' ){
+              $(this).css( "border" , "2px solid #e74c3c");
+                
+              if( continueSave == true){ 
+                       
+                  $("#tab1li").removeClass("active");
+                  $("#tab2li").addClass("active");
+                  $("#tab3li").removeClass("active");                   
+                  $("#tab1").removeClass("active");
+                  $("#tab2").addClass("active");
+                  $("#tab3").removeClass("active");              
+              }                                        
+              continueSave = false;
+              //alert('False from 3');  
+          }
+    });  
+    
+    if(continueSave == true ){
+          //$("body").hide();
+          setValueTovarDNDOrder();
+          afSave();
+    }
+
+    
+}
+
+
+/*----------HEADER LABEL---------*/
+
+function setHeaderlbl( ctrl , text ){
+    
+    d$ = jQuery.noConflict();
+    if(d$(ctrl).is(':checked') == true){
+       d$(ctrl).parent().next().val(d$(ctrl).parent().parent().prev().children("select").children("option:selected").text());
+       //d$(ctrl).parent().next().attr('disabled','disabled');
+    }
+    else{
+       d$(ctrl).parent().next().val('');
+       //d$(ctrl).parent().next().removeAttr('disabled');
+    }
+
+}
+
+/*----------HEADER LABEL RESET---------*/
+
+
+function resetHeadLabel( ctrl ){
+
+    e$ = jQuery.noConflict();
+
+    e$(ctrl ).parent().next().children().children("[type=checkbox]").checkbox('uncheck');
+    e$(ctrl ).parent().next().children().children("[type=checkbox]").checkbox('check');
+    e$(ctrl ).parent().next().children().children("[type=checkbox]").checkbox('uncheck');    
+    e$(ctrl ).parent().next().children("[type=text]").val('');
+
+}
+
+function fnacyClose(){
+    g$ = jQuery.noConflict();
+    g$.fancybox.close();
+}
+
+</script>             
+</apex:outputPanel>   
+</apex:form>
+
+
+</div>  
+
+
+      
+<!-- POP UP-->
+
+<div id="popUpAlert" style="display:none; width: 500px;"  class="">
+    <div class="uicontainer alert" style="padding : 5px;">
+        <div style="heignt:20px;  border-bottom: 2px solid #ebedef;margin:0px 0px 4px 0px;">            
+            <h4 class="modal-title">Confirm</h4>
+        </div>        
+        <div class="flushCenter">
+        <p>All changes will be lost, do you wish to continue?</p>
+        <a id="alertYes" type="button" onClick="moveOut(); return true;" href="#" class="btn btn-xs btn-embossed btn-danger btn-wide">Yes</a>
+        <a id="alertNo" type="button" onclick="fnacyClose();" class="btn btn-xs btn-embossed btn-primary btn-wide">No</a>
+        </div>
+    </div>        
+</div>   
+
+<!-- POP UP END --> 
+
+<!-- ARE YOU SURE POP UP-->
+
+<div id="popUpRUS" style="display:none; width: 500px;"  class="">
+    <div class="uicontainer alert" style="padding : 5px;">
+        <div style="heignt:20px;  border-bottom: 2px solid #ebedef;margin:0px 0px 4px 0px;">            
+            <h4 class="modal-title">Confirm Delete</h4>
+        </div>        
+        <div class="flushCenter">
+        <p>Are you sure to delete?</p>
+        <a id="alertYes" type="button" onClick="DeleteRow2(); return true;" href="#" class="btn btn-xs btn-embossed btn-danger btn-wide">Yes</a>
+        <a id="alertNo" type="button" onclick="fnacyClose();" class="btn btn-xs btn-embossed btn-primary btn-wide">No</a>
+        </div>
+    </div>        
+</div>   
+
+<!-- ARE YOU SURE POP UP END-->      
+
+<!-- STATUS--->
+<apex:actionStatus id="Status">
+    <apex:facet name="start">              
+        <div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;height: 100%;opacity:0.8;width:100%;"> 
+            <div class="waitingHolder" style="top: 48%; width: 91px;"> <!--style="top: 74.2px; width: 91px;"-->
+                <img class="waitingImage" style="width:25px;; height:25px;" src="{!URLFOR($Resource.flatui_v1, 'Flat-UI-Pro-1.2.5/images/icons/loader_circle.GIF')}" title="Please Wait " />
+                <span class="waitingDescription">Loading...</span>
+             </div>
+        </div>                
+    </apex:facet>              
+    <apex:facet name="stop"> </apex:facet>                        
+</apex:actionStatus> 
+<!--STATUS END--> 
+
+</body>
+
+</apex:page>

@@ -1,0 +1,205 @@
+<apex:page controller="CECR_RV" sidebar="false" >
+
+<apex:pageMessages ></apex:pageMessages>
+
+
+<head>
+    <!-- Load JS here for greater good =============================-->
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/jquery-1.8.3.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/jquery-ui-1.10.3.custom.min.js')}" /> 
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/jquery.ui.touch-punch.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/bootstrap.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/bootstrap-select.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/bootstrap-switch.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/flatui-checkbox.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/flatui-radio.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/jquery.tagsinput.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/jquery.placeholder.js')}" />    
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/holder.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/flatui-fileinput.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/typeahead.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/application.js')}" /> 
+    
+    <apex:stylesheet value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/bootstrap/css/bootstrap.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/css/flat-ui.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/css/demo.css')}"/>
+  
+</head>
+
+<script>
+   function confirmDelete(delIndex) {
+     if(window.confirm("Are you sure?")) {
+       removeRow(delIndex);
+     }
+   }
+   function setFocusOnLoad() {}
+</script>
+
+<apex:sectionHeader title="Add {!strPlural}{!IF(strMode != 'W',' - ','')}{!parentRecord[objPage.Parent_Record_Name__c]}"/>
+
+  <apex:form id="frm" styleClass="uicontainer" > 
+  
+  <apex:actionFunction action="{!removeRow}" name="removeRow" status="Status" immediate="true" reRender="frm">
+    <apex:param name="delIndex" value=""></apex:param>
+  </apex:actionFunction>
+    
+
+<apex:pageblock id="mainContainer">
+
+<apex:pageBlockButtons >
+    <apex:commandButton styleClass="btn btn-xs btn-primary btn-embossed mlm" value="Quick Save" action="{!QuickSave}" reRender="frm,errorPanel" status="Status" />
+    <apex:commandButton styleClass="btn btn-xs btn-success btn-embossed mlm" value="Save & Close" action="{!SaveClose}"/>
+    <apex:commandButton styleClass="btn btn-xs btn-warning btn-embossed mlm" value="Cancel" action="{!Cancel}" immediate="true"/>
+</apex:pageBlockButtons>
+<apex:pageBlockSection columns="3" title="Information" >
+    <!--<apex:panelGrid columns="3">-->      
+        <apex:repeat value="{!objFieldsTop}" var="f">                     
+                
+                <apex:inputField value="{!dummyChild[f.name]}" required="{!f.required}" rendered="{!f.input}"/>
+                <apex:outputField styleClass="outputClass" value="{!dummyChild[f.name]}" rendered="{!!f.input}"/>
+                
+        </apex:repeat>
+    <!--</apex:panelGrid>-->
+</apex:pageBlockSection>
+
+<apex:pageBlockSection columns="1" title="Activity Information">
+
+<apex:variable var="rowNum" value="{!1}" />
+
+
+<apex:pageblockTable id="tableMainContent" value="{!childRecords}" var="rec">
+    <!-- ROW NO. COLUMN COMMENTED <apex:column headerValue="" width="28px">
+        <apex:outputText value="{!ROUND(rowNum,0)}." />
+    </apex:column>-->
+    <apex:column headerValue="Action" width="60px">   
+    
+                <style>
+                table#mytable,
+                table#mytable td
+                {
+                    border: none !important;
+                    border-collapse:collapse !important;
+                }
+                
+                .multiHover{
+                    border : 2px solid #bdc3c7;
+                }
+                
+                .multiHover:focus{
+                    border : 2px solid #1abc9c;
+                }
+                
+        </style>
+        
+            
+        <a href="javascript:void(0)" title="Delete Record" class="actionLink"  onclick="return confirmDelete('{!rowNum}');"><apex:image style="cursor:pointer;margin-right: 5px; float: right ; "  width="13px" height="16px" title="Delete Row" url="{!$Resource.athf_delete}"/></a>
+                
+        &nbsp;&nbsp;
+        <apex:commandLink rendered="{! if(childRecords.size == rowNum, true , false )}" action="{!addRow}" rerender="frm" immediate="true" status="Status"><apex:image style="cursor: pointer;margin-top:1px; margin-right: 5px; float: right; " width="14px" height="14px" title="Add Row" url="{!$Resource.add}"/></apex:commandLink>
+        
+        <apex:variable var="rowNum" value="{!rowNum + 1}" />
+    </apex:column>
+         
+    <apex:repeat value="{!objFields}" var="f">
+        <apex:column headerValue="{!f.label}">
+            <apex:inputField value="{!rec[f.name]}" required="{!f.required}" rendered="{!f.input}"/>
+            <p><apex:outputField styleClass="outputClass" value="{!rec[f.name]}" rendered="{!!f.input}"/></p>
+        </apex:column>
+    </apex:repeat>
+</apex:pageblockTable>
+ <!--<apex:commandLink value="Add Row" action="{!addRow}" rerender="frm" immediate="true" status="Status"/>-->
+
+ 
+</apex:pageBlockSection>
+ 
+          
+</apex:pageblock>
+
+<script>
+
+function resetSizes(){
+j$ = jQuery.noConflict();   
+
+j$(".pbSubsection:eq( 1 )").attr("style" , "overflow-x: auto; overflow-y:  hidden;");
+j$(".pbSubsection:eq( 1 )").width(j$("#tabContainer").width()-50);
+j$(".tertiaryPalette").attr('style' , ' background : #1797c0;');
+}
+
+resetSizes();
+
+$(window).resize(resetSizes());
+
+</script>
+
+<apex:actionStatus id="Status">
+              <apex:facet name="start">
+              
+                <div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;
+                       height: 100%;opacity:0.8;width:100%;"> 
+                    <div class="waitingHolder" style="top: 48%; width: 91px;"> <!--style="top: 74.2px; width: 91px;"-->
+                        <img class="waitingImage" src="/img/loading.gif" title="Please Wait..." />
+                        <span class="waitingDescription">Loading...</span>
+                    </div>
+                </div>
+
+              </apex:facet>
+              
+              <apex:facet name="stop"> </apex:facet>
+              
+
+                        
+</apex:actionStatus>
+
+
+              <script>
+
+                  j$ = jQuery.noConflict();                 
+                  j$("[id$=tableMainContent]").attr('class', 'table table-bordered');
+                  
+                  j$("select[multiple!='multiple']").selectpicker({style: 'btn-sm  btn-embossed btn-primary', menuStyle: 'dropdown-inverse'}); 
+                  
+                  j$(".multiSelectPicklistTable").attr("id" , "mytable" );
+                  
+                  j$("select:not([multiple!='multiple'])").each(function() {
+                      
+                      if(j$( this ).css("display") != "none" ){                                                                  
+                          //j$( this ).attr("style", "border :2px solid #bdc3c7;");  
+                          j$( this ).attr("class", "multiHover");  
+                      }                                                                       
+                  });
+                  
+                  
+                  j$(".picklistArrowRight").attr('style' , 'background : url({!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/images/icons/right237.svg')})');  
+                  j$(".picklistArrowRight").attr('src' ,'{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/images/icons/right237.svg')}');              
+
+                  j$(".picklistArrowLeft").attr('style' , 'background : url({!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/images/icons/left216.svg')})');  
+                  j$(".picklistArrowLeft").attr('src' ,'{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/images/icons/left216.svg')}');              
+
+                  
+                  j$(":text").attr('class', 'form-control input-sm');                  
+                  j$(":text").attr('style', 'width:190px;');  
+                  
+                  j$(".lookupIcon").attr('style' , 'position: relative; left : 192px; top : -27px; background : url({!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/images/icons/search.svg')})');  
+                  j$(".lookupIcon").attr('src' ,'{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/images/icons/search.svg')}');           
+                  
+                  j$(".lookupInput").each(function() {
+                      
+                      //alert($( this ).parent(".requiredInput").attr("class"));
+                      j$( this ).parent(".requiredInput").attr("style" , "height: 37px;");
+                         
+                  });
+                  
+                  
+                  j$(":checkbox").wrap( '<label style="margin-left: 3px;" class="checkbox" for="checkbox1"></label>' );
+                  j$(":checkbox").checkbox();
+                  j$("textarea").attr('class' , 'form-control');
+                  j$(".dateFormat").hide();
+                  j$(".btn-group").attr('style' , 'height: 27px; border:none;');
+
+            
+               </script>
+
+</apex:form>
+
+
+</apex:page>

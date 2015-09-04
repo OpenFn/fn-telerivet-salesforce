@@ -1,0 +1,781 @@
+<!--
+Page Name: SetTargets
+Created Date: 25-02-2015
+Purpose: User will Create/Edit Result records and Submit this Reporting Period record for Approval.
+-->
+
+<apex:page sidebar="false" id="page" standardController="Reporting_Period__c" extensions="SetTargerts" >
+
+
+<apex:includeScript value="{!URLFOR($Resource.JqueryReference, '/jquery-1.10.2.min.js')}" />
+<apex:stylesheet value="{!URLFOR($Resource.GoalsJs, 'assets/css/bootstrap.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.GoalsJs, 'assets/css/bootstrap-responsive.css')}"/>
+<script>
+    function OpenPopup(ID){
+        document.getElementById(ID).style.display = '';
+    }
+    function ClosePopup(ID){
+        document.getElementById(ID).style.display = 'none';
+    }
+    function ClosePopup1(ID,OldValueId,NewValueID){
+        document.getElementById(NewValueID).value = document.getElementById(OldValueId).getAttribute("title");
+        document.getElementById(ID).style.display = 'none';
+    }
+    function OpenPopupChatter(popupId,dataid){
+        $(document.getElementById(popupId)).show();
+        $(document.getElementById(popupId)).find('iframe').attr('src','/apex/IndicatorChatter?IndicatorId='+dataid);
+    }
+</script> 
+<style>
+    a:link {color:#3299CC;text-decoration:underline}      <!--unvisited link-->
+    a:visited {color:#3299CC;text-decoration:underline}  <!--visited link-->
+    a:hover {color:#FF00FF;text-decoration:underline}  <!--mouse over link-->
+    a:active {color:#0000FF;text-decoration:underline}  <!--selected link-->
+    .bPageHeader table.phHeader td.right {
+        width:63%;
+    }
+    .ui-tooltip {
+        padding: 8px;
+        position: absolute;
+        z-index: 9999;
+        max-width: 300px;
+        -webkit-box-shadow: 0 0 5px #aaa;
+        box-shadow: 0 0 5px #aaa;
+        background:#ffffff;
+        color:#000000;
+    } 
+        
+    .chatterFeedPanel{
+        height: 300px !important;
+    }
+    .setfontStyle{
+        font-weight: bold !important;
+        font-size:13px;
+    }
+    
+    .setfontStyleHeader{
+        border: 1px solid #dddddd;
+        font-weight: bold !important;
+        font-size:13px;
+        text-align:center;
+        background: none repeat scroll 0 0 #3366CC !important;
+        color: #FFFFFF !important;
+        border-bottom: 0px;
+        border-top: 0px;
+    }  
+    .tdStyle{
+        border: 1px solid #dddddd;
+       
+    }  
+    h1, h2, h3 {
+        line-height: normal;
+    }
+    .clsPopup{
+        background-color:#fffff !important;
+        border-width: 0px;
+        border-radius:10px;
+        border-style: solid;
+        z-index: 9999;
+        left: 40%;
+        top:35%;           
+        position: fixed;
+        width:300px;
+        height:180px;
+    }
+    .popupBackground{
+        background-color:black;
+        opacity: 0.50;
+        filter: alpha(opacity = 20);
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        z-index: 9998;
+        top: 0;
+        left: 0;
+    } 
+    .cstblbutton a{
+        margin:0px 0px 10px 2px;
+    }
+   
+    input[type="text"]{
+        width: 60px;
+    }
+    #page{
+        background-color:#FFFFFF;
+    }
+    .table-bordered {
+        border: 1px solid #dddddd;
+        border-collapse: separate;
+        border-left: 0;
+        border-radius: 4px;
+    }
+    .grey {
+        background-color: #E6E6E6;
+        font-weight: bold;
+    }
+    body .bPageBlock, body #bodyCell .bResource .secondaryPalette, 
+    body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, 
+    body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, 
+    body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, 
+    body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, 
+    body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, 
+    body.UserTagStatsPage .secondaryPalette.bPageBlock{
+        background: none repeat scroll 0 0 #fff;
+    }
+</style>
+
+<apex:sectionHeader title="Project" subtitle="{!Reporting_Period__c.Project__r.Name}">
+</apex:SectionHeader>
+    
+<apex:form id="frm" >
+    <apex:pageBlock id="pgBlock1" >
+        <apex:actionFunction name="actQuickSave" reRender="frm" action="{!quickSaveResults}"  status="Processing"/>
+        <apex:actionFunction name="actSave" status="Processing"  action="{!saveResults}" />
+        <apex:actionFunction name="actArea" status="Processing"   action="{!fillIndicatiorAndResult}" reRender="frm" />        
+        
+        <apex:pagemessages id="errmsg"></apex:pagemessages>
+        <table width="100%">
+            <tr>
+                <th>
+                    <apex:outputText value="Area "/>
+                </th>
+                <td style="padding-top: 9px;">
+                    <apex:selectList value="{!SelectedArea}" multiselect="false" size="1" onchange="fnArea();return false;">
+                        <apex:selectOptions value="{!lstRegion}"/>
+                    </apex:selectList>
+                </td>
+                <th>
+                    <apex:outputText value="Reporting Period "/>
+                </th>
+                <td>
+                     <apex:outputText id="ofrptstartDate" value="{0,date,MM'/'dd'/'yyyy}">
+                        <apex:param value="{!Reporting_Period__c.Reporting_Period_Start_Date__c}"/>
+                    </apex:outputText> to &nbsp;
+                    <apex:outputText id="ofrptendDate" value="{0,date,MM'/'dd'/'yyyy}">
+                        <apex:param value="{!Reporting_Period__c.Reporting_Period_End_Date__c}"/>
+                    </apex:outputText>
+                </td>
+                <th>
+                    <apex:outputText value="Report Due Date " />
+                </th>
+                <td>
+                    <apex:outputText id="ofrptDueDate" value="{0,date,MM'/'dd'/'yyyy}">
+                        <apex:param value="{!Reporting_Period__c.Report_Due_Date__c}"/>
+                    </apex:outputText>
+                </td>
+                <th>
+                    <apex:outputText value="Report Type "/>
+                </th>
+                <td>
+                    <apex:outputText id="ofRptType" value="{!Reporting_Period__c.Report_Type__c}"/>
+                </td>
+                <td colspan="2">
+                    <apex:commandLink value="See Help" onclick="OpenPopup('{!$Component.popupHelp}');return false;" status="Processing"/> 
+                        <apex:outputPanel id="popupHelp"  style="display:none;background-color:#fff !important;">
+                            <apex:outputPanel id="popupHelpBackground" styleClass="popupBackground"/>
+                            <apex:outputPanel id="popupStyle" styleClass="clsPopup" >
+                            
+                            <table width="100%" class="cstblpopup" cellspacing="0" cellpadding="0" border="0" style="background-color:#fff !important;border-radius: 4px;" >
+                                <tr>
+                                    <td style="background: lightgray !important;padding: 8px 6px 8px 12px;border-radius:4px;">
+                                        <apex:outputtext style="font-weight: bold;" value="INSTRUCTIONS:"/>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td style="padding:5px;">
+                                        <apex:outputText value="Please fill out all results, disaggregating by gender when possible. For percentages, please enter a numerator and a demoninater whenever possible"></apex:outputText>
+                                    </td>
+                                </tr>          
+                                <tr>                   
+                                    <td width="47%" align="center" class="cstblbutton">                
+                                        <apex:commandLink id="cmdLinkCancelpopup" style="text-decoration:none;" styleClass="TGFbtn TGFbtn-mini TGFbtn-danger" onclick="ClosePopup('{!$Component.popupHelp}');return false;" status="Processing">
+                                            <strong style="color:white;">Close</strong>
+                                        </apex:commandLink>
+                                    </td>
+                                </tr>
+                            </table>
+                            </apex:outputPanel>
+                        </apex:outputPanel>   
+                </td>
+            </tr>
+        </table>
+        </apex:pageBlock>
+        <apex:pageBlock id="pgBlock2" >
+        <apex:outputPanel id="divWrapperResult">
+        
+        <apex:repeat value="{!lstWrpIndicatorResult}" var="objWrapper" >
+            <table style="padding: 10px;margin-bottom: 10px;border: 1px solid #CCC;width:100%;display:{!if(objWrapper.objIndicator.Reporting_Frequency__c != Reporting_Period__c.Report_Type__c,'none','')};">
+                <tr>
+                    <td colspan="2" style="border:none;padding:10px;">
+                        <h1 style="font-size:16px;">{!objWrapper.objIndicator.Description__c}</h1>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" style="padding:10px;width:30%;">
+                        <table cellpadding="2" width="100%" class="table table-condensed table-bordered">
+                            <tr>
+                                <td width="30%" valign="top" class="grey">Thematic Area
+                                </td>
+                                <td  width="70%" valign="top">{!objWrapper.objIndicator.Technical_Area_s__c}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="30%" valign="top" class="grey">Pillar
+                                </td>
+                                <td  width="70%" valign="top">{!objWrapper.objIndicator.Pillar__c}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top" class="grey">Aim
+                                </td>
+                                <td valign="top">
+                                    <apex:image rendered="{!if(objWrapper.objIndicator.Aim__c == 'Increase',true,false)}" value="{!$Resource.GreenArrow}" width="20px" height="15px"/>
+                                    <apex:image rendered="{!if(objWrapper.objIndicator.Aim__c == 'Decrease',true,false)}" value="{!$Resource.RedArrow}" width="20px" height="15px"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top" class="grey">Data Type
+                                </td>
+                                <td valign="top" >{!objWrapper.objIndicator.Data_Type__c}
+                                </td>
+                            </tr>                           
+                            
+                            <tr>
+                                <td valign="top" class="grey">Reporting Level
+                                </td>
+                                <td valign="top" >{!objWrapper.objIndicator.Geographical_Disaggregation__c}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top" class="grey">Log Level
+                                </td>
+                                <td valign="top" >
+                                        <apex:outputLabel value="{!objWrapper.objIndicator.Indicator_Level__c}" rendered="{!if(objWrapper.objIndicator.Parent_Indicator__c !='',false,true)}" />
+                                    
+                                        <apex:outputLink value="/{!objWrapper.objIndicator.Parent_Indicator__c}"  target="_blank" rendered="{!if(objWrapper.objIndicator.Parent_Indicator__c !='',true,false)}"> 
+                                            {!objWrapper.objIndicator.Indicator_Level__c}
+                                        </apex:outputLink>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top" class="grey">Indicator Notes
+                                </td>
+                                <td valign="top">
+                                <apex:outputText value="{!objWrapper.objIndicator.Notes__c}"></apex:outputText>
+                                    <!--<apex:commandLink value="See Notes" onclick="OpenPopup('{!$Component.popupNotes}');return false;" rendered="{!if(objWrapper.objIndicator.Notes__c !='',true,false)}" status="Processing"/> 
+                                        <apex:outputPanel id="popupNotes"  style="display:none;background-color:#fff !important;">
+                                            <apex:outputPanel id="popupNotesBackground" styleClass="popupBackground"/>
+                                            <apex:outputPanel id="popupStyle" styleClass="clsPopup" >
+                                            
+                                            <table width="100%" class="cstblpopup" cellspacing="0" cellpadding="0" border="0" style="background-color:#fff !important;border-radius:4px;" >
+                                                <tr>
+                                                    <td style="background: lightgray !important;padding: 8px 6px 8px 12px;border-radius:4px;">
+                                                        <apex:outputtext style="font-weight: bold;" value="Indicator Notes:"/>
+                                                    </td>
+                                                </tr> 
+                                                <tr>
+                                                    <td style="padding:5px;">
+                                                        <apex:outputText value="{!objWrapper.objIndicator.Notes__c}"></apex:outputText>
+                                                    </td>
+                                                </tr>          
+                                                <tr>                   
+                                                    <td width="47%" class="cstblbutton" style="border:none;text-align: center;">                
+                                                        <apex:commandLink id="cmdLinkCancelpopup" style="text-decoration:none;" styleClass="TGFbtn TGFbtn-mini TGFbtn-danger" onclick="ClosePopup('{!$Component.popupNotes}');return false;" status="Processing">
+                                                            <strong style="color:white;">Close</strong>
+                                                        </apex:commandLink>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            </apex:outputPanel>
+                                        </apex:outputPanel> -->
+                                </td>
+                            </tr>
+                          
+                        </table>
+                                <div>
+                                    <apex:commandLink id="cmdChatter" onclick="OpenPopupChatter('{!$Component.ChatterPopup}','{!objWrapper.objIndicator.id}');return false;" styleClass="TGFbtn TGFbtn-mini TGFbtn-success"  style="text-decoration:none;">
+                                        <strong style="color:white;">Chatter</strong>
+                                    </apex:commandLink> &nbsp;
+                                    <img  src="{!$Resource.PostCount}" style="{!if(objWrapper.blnHasPost,'width:25px;height:28px;','display:none;')}" />
+                                    <sup id="subCount" style="margin-left:-3px;margin-right:5px;color:dark-grey;padding-right:2px;display:{!if(objWrapper.blnHasPost,'','none')}">{!objWrapper.intPostCount}</sup>
+                                    
+                                    <apex:outputPanel id="ChatterPopup"  style="display:none;background-color:#fff !important;">
+                                        <apex:outputPanel id="popupChatterackground" styleClass="popupBackground"/>
+                                        <apex:outputPanel id="popupStyle1" styleClass="clsPopup" style="width:650px;left: 28%;top:20%;" >
+                                        
+                                        <table width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#fff !important;padding:5px;border-radius:4px;" >
+                                          
+                                            <tr>
+                                                <td style="padding:10px;">
+                                                    <h1 style="font-size:14px;">{!objWrapper.objIndicator.Description__c}</h1>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                   <td class="resourcetTable" style="padding:5px;">
+                                                        <div id="boxscroll" class="chatterFeedPanel" >
+                                                            <apex:iframe id="ifResourceChatter" height="280px" scrolling="true"  />                                                            
+                                                        </div>
+                                                    </td>
+                                            </tr>       
+                                            <tr>                   
+                                                <td width="47%" align="center" class="cstblbutton">                
+                                                   <apex:commandLink id="cmdCancelpopup" style="text-decoration:none;" styleClass="TGFbtn TGFbtn-mini TGFbtn-danger" onComplete="ClosePopup('{!$Component.ChatterPopup}');return false;" status="Processing" reRender="subCount">
+                                                        <strong style="color:white;">Close</strong>
+                                                    </apex:commandLink>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </div>
+                    </td>
+                    
+                    <td valign="top" style="padding:10px;width:70%;">
+                        <table cellpadding="2" width="100%" border="0" >
+                            <tr>
+                                <apex:outputText rendered="{!if((objWrapper.objIndicator.Data_Type__c == 'Qualitative'),true,false)}">                                   
+                                    <th width="45%" style=""  class="setfontStyleHeader" rowspan="1" colspan="7">Description
+                                    </th>
+                                </apex:outputText>    
+                            </tr>
+                            <tr style="display:{!if((objWrapper.objIndicator.Data_Type__c == 'Number' && objWrapper.objIndicator.Gender_Disaggregation__c == false &&  objWrapper.objIndicator.age_Disaggregation__c == true) || (objWrapper.objIndicator.Data_Type__c == 'Percent' && objWrapper.objIndicator.Gender_Disaggregation__c == false &&  objWrapper.objIndicator.age_Disaggregation__c == true) ,'','none')};">
+                                <th width="15%" style="" class="setfontStyleHeader"/>
+                                <th width="15%" style="" class="setfontStyleHeader" colspan="6">Total
+                                <th width="50%" style="" class="setfontStyleHeader" colspan="2">Comment
+                                </th>
+                                </th><!-- border-color:#CCC; -->
+                            </tr>
+                            <tr style="display:{!if((objWrapper.objIndicator.Data_Type__c == 'Number' && objWrapper.objIndicator.Gender_Disaggregation__c == true &&  objWrapper.objIndicator.age_Disaggregation__c == false) || (objWrapper.objIndicator.Data_Type__c == 'Percent' && objWrapper.objIndicator.Gender_Disaggregation__c == true &&  objWrapper.objIndicator.age_Disaggregation__c == false) ,'','none')};">
+                                <th width="15%" style=""  class="setfontStyleHeader" colspan="2">Male
+                                </th>
+                                <th width="15%" style=""  class="setfontStyleHeader" colspan="2">Female
+                                </th>
+                                <th width="15%" style="" class="setfontStyleHeader" colspan="2">Total
+                                </th>
+                                <th width="15%" style="" class="setfontStyleHeader" colspan="2">Comment
+                                </th>
+                            </tr>
+                            
+                            <tr style="display:{!if((objWrapper.objIndicator.Data_Type__c == 'Number' && objWrapper.objIndicator.Gender_Disaggregation__c == true &&  objWrapper.objIndicator.age_Disaggregation__c == true) || (objWrapper.objIndicator.Data_Type__c == 'Percent' && objWrapper.objIndicator.Gender_Disaggregation__c == true &&  objWrapper.objIndicator.age_Disaggregation__c == true) ,'','none')};">
+                                <th width="15%" style=""  class="setfontStyleHeader" colspan="1">
+                                </th>
+                                <th width="15%" style=""  class="setfontStyleHeader" colspan="2">Male
+                                </th>
+                                <th width="15%" style=""  class="setfontStyleHeader" colspan="2">Female
+                                </th>
+                                <th width="15%" style="" class="setfontStyleHeader" colspan="2">Total
+                                </th>
+                                <th width="15%" style="" class="setfontStyleHeader" colspan="2">Comment
+                                </th>
+                            </tr>
+                            <tr style="display:{!if((objWrapper.objIndicator.Data_Type__c == 'Number' && objWrapper.objIndicator.Gender_Disaggregation__c == false &&  objWrapper.objIndicator.age_Disaggregation__c == false) || (objWrapper.objIndicator.Data_Type__c == 'Percent' && objWrapper.objIndicator.Gender_Disaggregation__c == false &&  objWrapper.objIndicator.age_Disaggregation__c == false) ,'','none')};">
+                                <th width="15%" style="" class="setfontStyleHeader" colspan="2">Total
+                                </th>
+                            </tr>
+                            
+                            <apex:repeat value="{!objWrapper.lstwrpResult}"  var="objwrpResult" id="repeatResult">
+                            
+                            <tr>
+                                <td valign="top" class="tdStyle" style="display:{!if(objWrapper.objIndicator.Age_Disaggregation__c !=null && objWrapper.objIndicator.Age_Disaggregation__c == true,'','none')};"><!--{!objwrpResult.objResult.Geographical_Area__c}-->
+                                {!objwrpResult.objResult.Age_Category__c} 
+                                </td>
+                                                            
+                                <apex:outputText id="idCase1" rendered="{!if(((objWrapper.objIndicator.Data_Type__c == 'Number' || objWrapper.objIndicator.Data_Type__c == 'Qualitative') && objWrapper.objIndicator.Gender_Disaggregation__c == true),true,false)}">
+                                    <td colspan="2" class="tdStyle" valign="top" align="center">
+                                        <apex:inputText value="{!objwrpResult.objResult.Male_Target__c}" maxlength="8" id="idMResultCase1" onchange="getResultCase1('{!$Component.idFMResultCase1}','{!$Component.idMResultCase1}','{!$Component.idResultCase1}');" />
+                                    </td>
+                                    <td colspan="2" class="tdStyle" valign="top" align="center">
+                                        <apex:inputText value="{!objwrpResult.objResult.Female_Target__c}" maxlength="8" id="idFMResultCase1" onchange="getResultCase1('{!$Component.idFMResultCase1}','{!$Component.idMResultCase1}','{!$Component.idResultCase1}');"/>
+                                    </td>
+                                    <td colspan="2" class="tdStyle" valign="top" align="center">
+                                        <apex:inputfield id="idResultCase1" value="{!objwrpResult.objResult.Target__c}"/>
+                                    </td>
+                                </apex:outputText>
+                                
+                                <apex:outputText id="idCase7" rendered="{!if(((objWrapper.objIndicator.Data_Type__c == 'Number' || objWrapper.objIndicator.Data_Type__c == 'Qualitative') && objWrapper.objIndicator.Gender_Disaggregation__c == false && objWrapper.objIndicator.Age_Disaggregation__c == true),true,false)}">                                    
+                                    <td  class="tdStyle" valign="top" align="center" colspan="6">
+                                        <apex:inputfield id="idResultCase7" value="{!objwrpResult.objResult.Target__c}"/>
+                                    </td>
+                                </apex:outputText>
+                                
+                                <apex:outputText id="idCase2" rendered="{!if((objWrapper.objIndicator.Data_Type__c == 'Percent' && objWrapper.objIndicator.Gender_Disaggregation__c == true ),true,false)}">
+                                    <td valign="top" class="tdStyle" align="center"> 
+                                        <apex:inputText value="{!objwrpResult.objResult.Male_Target__c}" maxlength="8"  id="idMResultCase2" onchange="getResultCase4('{!$Component.idMResultCase2}','{!$Component.idMDemCase2}','{!$Component.idMPerCase2}');getResultCase2('{!$Component.idMResultCase2}','{!$Component.idFMResultCase2}','{!$Component.idResultCase2}');getResultCase4('{!$Component.idResultCase2}','{!$Component.idTDemCase2}','{!$Component.idTPerCase2}');"/><br/>
+                                        <apex:inputText value="{!objwrpResult.objResult.Male_Target_Denominator__c}" maxlength="8"  id="idMDemCase2"  onchange="getResultCase4('{!$Component.idMResultCase2}','{!$Component.idMDemCase2}','{!$Component.idMPerCase2}');getResultCase2('{!$Component.idMDemCase2}','{!$Component.idFMDemCase2}','{!$Component.idTDemCase2}');getResultCase4('{!$Component.idResultCase2}','{!$Component.idTDemCase2}','{!$Component.idTPerCase2}');"/>
+                                    </td>
+                                    <td valign="center" class="tdStyle" align="center">
+                                        <div style="float:left;width:80px;"><apex:inputText value="{!objwrpResult.objResult.Male_Target_Percent__c}" onkeyup="return onlyNos(this,event);"  id="idMPerCase2" maxlength="6" style="height:40px;width:45px;float:left;" /><span style="float: left;height: 40px;margin-top: 16px;padding:2px;">%</span></div>
+                                    </td>
+                                    
+                                    <td valign="top" class="tdStyle" align="center">
+                                        <apex:inputText value="{!objwrpResult.objResult.Female_Target__c}" maxlength="8" id="idFMResultCase2" onchange="getResultCase4('{!$Component.idFMResultCase2}','{!$Component.idFMDemCase2}','{!$Component.idFMPerCase2}');getResultCase2('{!$Component.idMResultCase2}','{!$Component.idFMResultCase2}','{!$Component.idResultCase2}');getResultCase4('{!$Component.idResultCase2}','{!$Component.idTDemCase2}','{!$Component.idTPerCase2}');"/><br/>
+                                        <apex:inputText value="{!objwrpResult.objResult.Female_Target_Denominator__c}" maxlength="8" id="idFMDemCase2" onchange="getResultCase4('{!$Component.idFMResultCase2}','{!$Component.idFMDemCase2}','{!$Component.idFMPerCase2}');getResultCase2('{!$Component.idMDemCase2}','{!$Component.idFMDemCase2}','{!$Component.idTDemCase2}');getResultCase4('{!$Component.idResultCase2}','{!$Component.idTDemCase2}','{!$Component.idTPerCase2}');"/>
+                                    </td>
+                                    <td valign="center" class="tdStyle" align="center">
+                                     
+                                        <div style="float:left;width:80px;"><apex:inputText value="{!objwrpResult.objResult.Female_Target_Percent__c}" id="idFMPerCase2" maxlength="6" onkeyup="return onlyNos(this,event);"   style="height:40px;width:45px;float:left;"/><span style="float: left;height: 40px;margin-top: 16px;padding:2px;">%</span></div>
+                                       
+                                    </td>
+                                    
+                                    <td valign="top" class="tdStyle" align="center">
+                                        <apex:inputText value="{!objwrpResult.objResult.Target__c}" maxlength="8" id="idResultCase2" onchange="getResultCase4('{!$Component.idResultCase2}','{!$Component.idTDemCase2}','{!$Component.idTPerCase2}');" /><br/>
+                                        <apex:inputText value="{!objwrpResult.objResult.Total_Target_Denominator__c}" maxlength="8" id="idTDemCase2"  onchange="getResultCase4('{!$Component.idResultCase2}','{!$Component.idTDemCase2}','{!$Component.idTPerCase2}');"/>
+                                    </td>
+                                    <td valign="center" class="tdStyle" align="center" >
+                                        <div style="float:left;width:75px;"><apex:inputText value="{!objwrpResult.objResult.Total_Target_Percent__c}" onkeyup="return onlyNos(this,event);"  maxlength="6" id="idTPerCase2"  style="height:40px;width:40px;float:left;" /><span style="float: left;height: 40px;margin-top: 16px;padding:2px;">%</span></div>
+                                    </td>
+                                </apex:outputText>
+                                
+                               <apex:outputText rendered="{!if((objWrapper.objIndicator.Data_Type__c == 'Qualitative' && objWrapper.objIndicator.Gender_Disaggregation__c == False && objWrapper.objIndicator.Age_Disaggregation__c == False),true,false)}">
+                                    <td colspan="7" class="tdStyle" valign="top" align="center"> 
+                                        <apex:inputText styleClass="clsQuaTarget" value="{!objwrpResult.objResult.Qualitative_Target__c}" style="width:80%" />
+                                    </td>
+                                </apex:outputText>
+                                
+                                <apex:outputText rendered="{!if((objWrapper.objIndicator.Data_Type__c != 'Qualitative' && objWrapper.objIndicator.Gender_Disaggregation__c == False && objWrapper.objIndicator.Age_Disaggregation__c == False),true,false)}">
+                                    <td colspan="7" class="tdStyle" valign="top" align="center"> 
+                                        <apex:inputText styleClass="clsQuaTarget" value="{!objwrpResult.objResult.Target__c}" style="width:80%" />
+                                    </td>
+                                </apex:outputText>
+                                
+                                
+                                <apex:outputText id="idCase4" rendered="{!if((objWrapper.objIndicator.Data_Type__c == 'Percent' && objWrapper.objIndicator.Gender_Disaggregation__c == False && objWrapper.objIndicator.Age_Disaggregation__c == true),true,false)}">
+                                    <td colspan="3" class="tdStyle" valign="top" align="center"> 
+                                        <apex:inputText value="{!objwrpResult.objResult.Target__c}" maxlength="8" id="idResultCase4" onchange="getResultCase4('{!$Component.idResultCase4}','{!$Component.idTDCase4}','{!$Component.idTPerCase4}');"/><br/>
+                                        <apex:inputText value="{!objwrpResult.objResult.Total_Target_Denominator__c}" maxlength="8" id="idTDCase4" onchange="getResultCase4('{!$Component.idResultCase4}','{!$Component.idTDCase4}','{!$Component.idTPerCase4}');"/>
+                                    </td>
+                                    <td colspan="3" class="tdStyle" valign="center" align="center">
+                                        <div style="float:left;width:80px;"><apex:inputText value="{!objwrpResult.objResult.Total_Target_Percent__c}" id="idTPerCase4" onkeyup="return onlyNos(this,event);" maxlength="6" style="height:40px;width:45px;float:left;"/><span style="float: left;height: 40px;margin-top: 16px;padding:2px;">%</span></div>
+                                    </td>
+                                </apex:outputText>
+                                
+                                 
+                                <apex:outputText id="idcommnet" rendered="{!if((objWrapper.objIndicator.Age_Disaggregation__c == False && objWrapper.objIndicator.Gender_Disaggregation__c == False),false,true)}">
+                                <td valign="top" class="tdStyle">
+                                    
+                                    <apex:outputText id="ifComment" title="{!objwrpResult.objResult.Comments__c}" value="{!IF(LEN(objwrpResult.objResult.Comments__c)>40,MID(objwrpResult.objResult.Comments__c,0,40)+'...',objwrpResult.objResult.Comments__c)}"></apex:outputText>
+                                    <!--<apex:outputText id="ifComment" title="{!objwrpResult.objResult.Comments__c}" value="{! IF(LEN(objwrpResult.objResult.Comments__c)>80,MID(objwrpResult.objResult.Comments__c,0,80) + '...',objwrpResult.objResult.Comments__c)}"></apex:outputText>-->
+                                    <apex:commandLink id="cmdLinkEdit"  onclick="OpenPopup('{!$Component.popupComments}');return false;" styleClass="TGFbtn TGFbtn-mini TGFbtn-primary" style="text-decoration:none;padding:3px;float:right;">
+                                        <i class="icon-edit icon-white"></i>
+                                    </apex:commandLink>
+                                    
+                                        <apex:outputPanel id="popupComments"  style="display:none;background-color:#fff !important;">
+                                            <apex:outputPanel id="popupCommentsBackground" styleClass="popupBackground"/>
+                                            <apex:outputPanel id="popupStyle2" styleClass="clsPopup" >
+                                            
+                                            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#fff !important;border-radius:4px;" >
+                                                <tr>
+                                                    <td style="background: lightgray !important;padding: 8px 6px 8px 12px;border-radius:4px;">
+                                                        <apex:outputtext style="font-weight: bold;" value="Comments"/>
+                                                    </td>
+                                                </tr> 
+                                                <tr>
+                                                    <td style="padding:5px;">
+                                                        <apex:inputField id="inpComments"  value="{!objwrpResult.objResult.Comments__c}" style="resize:none;width:275px;height:96px;"  />
+                                                    </td>
+                                                </tr>          
+                                                <tr>                   
+                                                    <td width="47%" align="center" class="cstblbutton">                
+                                                      
+                                                        <apex:commandLink id="cmdLinkSave" style="text-decoration:none;" reRender="ifComment" styleClass="TGFbtn TGFbtn-mini TGFbtn-success" action="{!quickSaveResults}" oncomplete="ClosePopup('{!$Component.popupComments}');return false;" status="Processing"  >
+                                                            <strong style="color:white;">Save</strong> 
+                                                                   
+                                                        </apex:commandLink>
+                                                    
+                                                        <apex:commandLink id="cmdLinkCancel" style="text-decoration:none;" styleClass="TGFbtn TGFbtn-mini TGFbtn-danger" onclick="ClosePopup1('{!$Component.popupComments}','{!$Component.ifComment}','{!$Component.inpComments}');return false;" status="Processing" >
+                                                            <strong style="color:white;">Cancel</strong>
+                                                        </apex:commandLink>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            </apex:outputPanel>
+                                        </apex:outputPanel>
+                                </td>
+                                </apex:outputText>
+                            </tr>
+                           
+                            </apex:repeat>
+                            
+                        </table>
+                        
+                    </td>
+                </tr>
+            </table>
+        </apex:repeat>
+        <!--</div>-->
+        </apex:outputPanel>
+        <div style="text-align:center;padding:5px;">
+            <apex:commandLink id="btnQSave" onclick="fnQuickSave();return false;" styleClass="TGFbtn TGFbtn-mini TGFbtn-warning" style="text-decoration:none;" >
+                <strong style="color:white;">Quick Save</strong>
+            </apex:commandLink>  &nbsp;
+            
+            <apex:commandLink id="btnSave" styleClass="TGFbtn TGFbtn-mini TGFbtn-success" onclick="fnSave();return false;" style="text-decoration:none;" >
+                <strong style="color:white;">Save</strong>
+            </apex:commandLink>  &nbsp;
+            
+            <apex:commandLink id="btnCancel" styleClass="TGFbtn TGFbtn-mini TGFbtn-danger" status="Processing" style="text-decoration:none;" action="{!cancel}">
+                <strong style="color:white;">Cancel</strong>
+            </apex:commandLink>  &nbsp;
+        </div>
+        <!--Display Results of Related Indicators (End)-->
+        <script>
+        function fnQuickSave(){
+            removeCommaonSave();
+            actQuickSave();
+            addCommaonSave();
+        }
+        function fnArea(){
+            $('div.bPageBlock ').find('input').each(function(){
+                $(this).val(RemoveComma($(this).val()));
+            });
+            $('div.bPageBlock ').find('span[id$=idResultCase1]').each(function(){
+                $(this).text(RemoveComma($(this).text()));
+            });
+            actArea();
+        }
+        function fnSave(){
+            removeCommaonSave();
+            actSave();
+            addCommaonSave();
+        }
+        function removeCommaonSave(){
+            $('div.bPageBlock ').find('input').each(function(){
+                if(!$(this).hasClass("clsQuaTarget")){
+                    $(this).val(RemoveComma($(this).val()));
+                }
+            });
+            $('div.bPageBlock ').find('span[id$=idResultCase1]').each(function(){
+                if(!$(this).hasClass("clsQuaTarget")){
+                    $(this).text(RemoveComma($(this).text()));
+                }
+            });
+        }
+        function addCommaonSave(){
+            $('div.bPageBlock ').find('input').each(function(){
+                if(!$(this).hasClass("clsQuaTarget")){
+                    $(this).val(addCommas($(this).val()));
+                }
+            });
+            $('div.bPageBlock ').find('span[id$=idResultCase1]').each(function(){
+                if(!$(this).hasClass("clsQuaTarget")){
+                    $(this).text(addCommas($(this).text()));
+                }
+            });
+        }
+        function getResultCase1(value1,value2,result){
+        
+            var v1=document.getElementById(value1).value;
+            var v2=document.getElementById(value2).value;
+            var v3=document.getElementById(result).value ;
+            v3 = 0;
+            if(isNaN(v3) || v3 == null || v3 == '' || v3 == '&nbsp;'){
+                v3=0;
+            }else{
+                v3=parseInt(v3);
+            }
+           
+            if(v1 != null && v1!='' && !isNaN(v1) ){
+                v3 = parseInt(v1);
+            }
+            if(v2!= null && v2!='' && !isNaN(v2)){
+                v3 += parseInt(v2);
+            }
+            
+            if(!isNaN(v3)){
+                document.getElementById(result).value = v3;
+                //document.getElementById(hiddenValue).value = v3;
+            }else{
+                document.getElementById(result).value = '0';
+                //document.getElementById(hiddenValue).value = '0';
+            }
+          
+        }
+        
+        function getResultCase2(value1,value2,result){
+            var v1=document.getElementById(value1).value;
+            var v2=document.getElementById(value2).value;
+            var v3=document.getElementById(result).value;
+            v3 = 0;
+            if(isNaN(v3) || v3 == null || v3 == ''){
+                v3=0;
+            }else{
+                v3=parseInt(v3);
+            }
+           
+            if(v1 != null && v1!='' && !isNaN(v1) ){
+                v3 = parseInt(v1);
+            }
+            if(v2!= null && v2!='' && !isNaN(v2)){
+                v3 += parseInt(v2);
+            }
+            
+            if(!isNaN(v3)){
+                document.getElementById(result).value = v3;
+            }else{
+                document.getElementById(result).value  = '0';
+            }
+        
+        }
+        function getResultCase4(value1,value2,result){
+            var v1=document.getElementById(value1).value;
+            var v2=document.getElementById(value2).value;
+            var v3=document.getElementById(result).value;
+            v3 = 0;
+            if(v3 != '' && v3!= null && !isNaN(v3)){
+                v3=0;
+            }else{
+                v3=parseFloat(v3);
+            }
+            
+            if(v1!= null && v1!='' && v2!= null && v2!='' &&  !isNaN(v1) &&  !isNaN(v2)){
+                v3 = parseFloat(v1/v2*100).toFixed(2);
+            }
+            
+            if(!isNaN(v3)){
+                document.getElementById(result).value = v3;
+            }else{
+                document.getElementById(result).value  = '0';
+            }
+        }
+        
+        
+        function addCommas(nStr){
+            //alert(nStr);
+            nStr = Math.round(nStr*100)/100;
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+            return x1 + x2;
+        }
+        
+        function RemoveComma(CostValue){
+                
+            var ReComma = new RegExp("\\,","g");
+            var ReQuate = new RegExp("\\'","g");
+            CostValue = CostValue.replace(ReComma,"");
+            CostValue = CostValue.replace(ReQuate,"");
+            CostValue = CostValue.replace(",.",".");
+            CostValue = CostValue.replace("'.",".");
+            return CostValue;
+        }
+        
+        $(document).ready(function(){
+            $('div.bPageBlock ').find('input').each(function(){
+                if(!$(this).hasClass("clsQuaTarget")){
+                    $(this).val(addCommas($(this).val()));
+                }
+            });
+            
+        });
+        
+        
+        
+        /*$(document).on('keypress', $('div.bPageBlock input'),function(evt) {  
+            var txtbx = $('div.bPageBlock input');
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46)
+                return false;
+            else {
+                var len = txtbx.val().length;
+                var index = txtbx.val().indexOf('.');
+
+                if (index > 0 && charCode == 46) {
+                    return false;
+                }
+                if (index > 0) {
+                    var charAfterdot = (len + 1) - index;
+                    if (charAfterdot > 3) {
+                        return false;
+                    }
+                }
+            }
+            
+            return txtbx; 
+        });*/
+        function onlyNos(inpValue,evt) {
+            
+            /*var txtbx = inpValue.value;
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            
+            if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46)
+                return false;
+            else {
+                var len = txtbx.val().length;
+                var index = txtbx.val().indexOf('.');
+
+                if (index > 0 && charCode == 46) {
+                    return false;
+                }
+                if (index > 0) {
+                    var charAfterdot = (len + 1) - index;
+                    if (charAfterdot > 3) {
+                        return false;
+                    }
+                }
+            }
+            
+            return txtbx;*/
+            var textValue  = inpValue.value;
+            try {
+              if (evt) {
+                    var charCode = evt.which;
+                    if(charCode != null) {                        
+                        if(textValue.indexOf(".") != -1) {
+                            var strSplit  = textValue.split(".");
+                            if (strSplit[1].length > 1){
+                                inpValue.value=strSplit[0]+"."+strSplit[1].substring(0,2);
+                                return false;
+                            }
+                        } 
+                    }
+                }
+            }
+            catch (err) {
+                alert(err.Description);
+            }
+            return true;  
+        }
+       
+    </script>
+    </apex:pageBlock>
+    
+</apex:form>
+    <!------------- Start: Processing Div---------------------------------------->
+    <style>
+        .ProcessingBackground{
+            background-color: black;
+            opacity: 0.50;
+            filter: alpha(opacity = 50);
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            z-index: 10000;
+            top:0;
+            left:0;
+        }
+        .Processing{
+            z-index: 10001;
+            left: 50%;
+            top: 50%;
+            text-align: center;
+            position: fixed;
+        }        
+    </style>
+    <div id="divProcessing" style="display:none;">
+        <div class="ProcessingBackground"></div>
+        <div class="Processing">
+            <apex:image alt="Processing"  value="/img/loading32.gif" />
+        </div>
+    </div>  
+    
+    <apex:actionStatus id="Processing" onstart="document.getElementById('divProcessing').style.display = '';" onstop="document.getElementById('divProcessing').style.display = 'none';">                            
+    </apex:actionStatus>
+    <!------------- End: Processing Div---------------------------------------->  
+
+</apex:page>

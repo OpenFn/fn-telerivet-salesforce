@@ -1,0 +1,1184 @@
+<apex:page sidebar="false" id="page" standardController="Project__c" extensions="ManageIndicators" >
+
+
+<apex:includeScript value="{!URLFOR($Resource.JqueryReference, '/jquery-1.10.2.min.js')}" />
+<apex:stylesheet value="{!URLFOR($Resource.GoalsJs, 'assets/css/bootstrap.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.GoalsJs, 'assets/css/bootstrap-responsive.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.fixHeaderTable,'/fixHeaderTable/jquery.fixheadertable.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.fixHeaderTable, '/fixHeaderTable/base.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.fixHeaderTable, '/fixHeaderTable/jquery-ui-1.8.4.custom.css')}"/>
+<script>
+    function fnfixheader(){
+        setTimeout(function(){ fixHeader();}, 200);
+
+        setTimeout(function(){ fixHeader1();}, 400);
+
+        
+    }
+    function fixHeader(){
+        $('.fixme').fixheadertable({                         
+             height  : 400                       
+        });        
+    } 
+     function fixHeader1(){
+        $('.fixme1').fixheadertable({                              
+             height  : 130                      
+        });  
+         
+         $('th.clsCheckbox').attr('width','35px');
+         
+        // $('.headerRow ui-widget-content ui-state-default').css('width',"35 !important");      
+    } 
+    $(document).ready(function() {
+        
+        funsetHeight();         
+        $(document).on('click','.chkClsCheckedId',function(){
+            
+            var chkid = $('.chkClsCheckedId:checked').map(function() {
+            id = $(this).siblings("input[type='hidden']").val();           
+            return id;
+            }).get().join('#');
+            $('input[id$=hdnSelectedCheckBox]').val(chkid);            
+            if($(this).prop('checked')==false)
+                $('.chkClsCheckedMain').prop('checked',false);
+            else{
+                if($('.chkClsCheckedId').length == $('.chkClsCheckedId:checked').length)
+                    $('.chkClsCheckedMain').prop('checked',true);
+            }
+        
+        });
+        
+        $(document).on('click','.chkClsCheckedMain',function(){
+        
+            if($(this).prop('checked')==true)
+                $('.chkClsCheckedId').prop('checked',true);
+            else
+                $('.chkClsCheckedId').prop('checked',false);
+            
+            var chkid = $('.chkClsCheckedId:checked').map(function() {
+            id = $(this).siblings("input[type='hidden']").val();
+            return id;
+            }).get().join('#');
+            $('input[id$=hdnSelectedCheckBox]').val(chkid);
+            
+            
+        });
+        fixHeader();
+        fixHeader1();
+    }); 
+    function funsetHeight(){
+        setButtonVisiblity();
+        
+        $('select[id$=ifIndiactorSource_unselected]').css({height:'120px'});
+        $('select[id$=ifIndiactorSource_selected]').css({height:'120px'});
+        
+        $('select[id$=ifTechnicalArea_unselected]').css({height:'150px'});
+        $('select[id$=ifTechnicalArea_selected]').css({height:'150px'});
+              
+       
+        if($('table[id$=PgBlockTCatalogIndicator]').find('.chkClsCheckedId').length == 0){
+           $('table[id$=PgBlockTCatalogIndicator]').find('.chkClsCheckedMain').prop('checked',false);
+        }
+       
+       
+        //$('select[id$=inpIndicatorSource .multiSelectPicklistCell]').css({height:'70px',text-align:'center',width:'40px !important',display:'inline-table'});
+    }
+    function confirmDeleteIndicator() {
+          return confirm('Please confirm that you would like to delete this Indicator');
+    }
+    function createIndicator() {
+          return confirm('Please confirm that you would like to create this custom Indicator as a Catalog Indicator');
+    }
+    function OpenPopupTArea(ID){
+        document.getElementById(ID).style.display = '';
+    }
+    function ClosePopupTArea(ID){
+        document.getElementById(ID).style.display = 'none';
+    }
+    function setButtonVisiblity(){
+        $('.clsbtnVisibility').each(function(i){
+             if($(this).text() == 'false'){
+                $(this).siblings('.clsbtnAction').show();
+                
+                $('a[id$=cmdAddCustomIndicator]').css({display:''});
+            }else{
+                
+                $(this).siblings('.clsbtnAction').hide().addClass('clsActive');
+                $('a[id$=cmdAddCustomIndicator]').css({display:'none'});
+            }
+            if(i == $('.clsbtnVisibility').length-1){
+                if($('.clsActive').length  > 0){
+                    $('.clsbtnVisibility').siblings('.clsbtnAction').hide();
+                    $('a[id$=cmdAddCustomIndicator]').css({display:'none'});
+                    $('.clsActive').show();
+                }
+            }
+        });
+       
+        
+    }
+    function CheckIndicatorSelected(){        
+        actAddIndicator();
+        return false;
+    }; 
+    
+</script> 
+<style>
+        a:link {color:#3299CC;text-decoration:underline}      <!--unvisited link-->
+        a:visited {color:#3299CC;text-decoration:underline}  <!--visited link-->
+        a:hover {color:#FF00FF;text-decoration:underline}  <!--mouse over link-->
+        a:active {color:#0000FF;text-decoration:underline}  <!--selected link-->
+        
+        .multiSelectPicklistRow { display:table; }
+        th[id$=colFreq2header]{
+            white-space: normal !important;
+        }
+        th[id$=colGenderheader]{
+            white-space: normal !important;
+        }
+        th[id$=colTArea2header]{
+            white-space: normal !important;
+        }
+        td[id$=colButton2]{
+            white-space: normal !important;
+        }
+        .bPageHeader table.phHeader td.right {
+            width:63%;
+        }
+        //table.list td{white-space: nowrap;}
+        .cstblpopup td{
+            background: #fff !important;
+            border:none !important;
+        }
+        .multiSelectPicklistTable td{
+             border:none !important;
+        }
+        select[id$=inpIndicatorSource_unselected]{
+            width:100px !important;
+            height:100px !important;
+            padding: 4px 6px !important;
+        }
+        select[id$=inpIndicatorSource_selected]{
+            width:100px !important;
+            height:100px !important;
+            padding: 4px 6px !important;
+            
+        }
+        select[id$=inpArea_unselected]{
+            width:200px !important;
+            height:100px !important;
+            padding: 4px 6px !important;
+        }
+        select[id$=inpArea_selected]{
+            width:200px !important;
+            height:100px !important;
+            padding: 4px 6px !important;
+        }
+        .headerRow :nth-child(9) div { 
+            white-space: pre-line; /* CSS 3 */
+            word-wrap: break-word; /* IE */ 
+        }
+        .multiSelectPicklistCell {
+            width: 31px !important;
+            text-align: center;
+            height:120px !important;
+        }
+        id$=inpIndicatorSource .multiSelectPicklistCell {
+            width: 40px !important;
+            text-align: center;
+            height:120px !important;
+            display:inline-table;
+        }
+        td.multiSelectPicklistCell {
+            vertical-align:middle;
+            height: 120px !important;
+        }
+        .TGFbtn.TGFbtn-mini.TGFbtn-primary {
+            margin: 5px;
+        }
+        .tblStyle {
+            font-size:12px;
+         }
+         .clsPopup{
+            background-color:#fffff !important;
+            border-width: 0px;
+            border-radius:10px;
+            border-style: solid;
+            z-index: 9999;
+            left: 40%;
+            top:35%;           
+            
+            position: fixed;
+            width:300px;
+            height:180px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.50;
+            filter: alpha(opacity = 20);
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 9998;
+            top: 0;
+            left: 0;
+        } 
+        
+        .cmdNoteIconStyle{
+            margin-top: 10% !important;
+        }
+        
+        .clsPopupLog{
+             z-index: 90;
+            position: fixed;
+            top:10%;
+            left: 32%;
+            width: 550px;
+            height: 500px;
+            background-color: #ffffff;
+            border-radius:10px;
+            border-style: solid;
+            border-width: 0px;
+            padding:1px;
+            /*margin-left: -250px;*/
+        }
+        .popupBackgroundLog{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 90;
+        } 
+        
+        
+       
+        .setfontStyle{
+            font-weight: bold !important;
+            font-size:13px;
+        } 
+        .pbBody table.list tr.headerRow th  {
+            background: none repeat scroll 0 0 #3366cc !important;
+            color: #fff !important;
+        }
+        .pbBody table.list tr.headerRow th a {
+            background: none repeat scroll 0 0 #3366cc !important;
+            color: #fff !important;
+        }
+        .tblbottom tr{
+            border-bottom:1px solid #f3f3f3;
+            
+        }
+        .tblSearch {
+            margin-top:5px;
+        }
+        select,textarea, input[type="text"]{
+            border: 1px solid #CCCCCC;
+            width: auto;
+            height: auto;
+            line-height: normal;
+        }
+        input[type="text"]{
+            width: 100px;
+        }
+        h1, h2, h3 {
+            line-height: normal;
+        }
+        .cstblbutton a{
+            margin:0px 0px 10px 2px;
+        }
+        .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+            border: 1px solid #DDD;
+            background: none repeat scroll 0% 0% rgb(51, 102, 204);
+            color: rgb(255, 255, 255);
+            font-weight: bold;
+            font-size: 13px;   
+        }       
+        <!--div.t_fixed_header table { 
+            table-layout: fixed;
+            empty-cells: show;
+            border-collapse: collapse;
+            border-spacing: 0px;
+        }-->
+        div.t_fixed_header table {
+            width: 99%;
+        }
+       
+        div.t_fixed_header table  a {
+            margin: 2px  !important;
+            padding:0 2px  !important;
+        }
+        div.t_fixed_header table  a[id$=cmdLinkEdit] {
+            margin: 2px  !important;
+            padding: 2px  !important;
+        }
+        div.t_fixed_header table  a[id$=cmdLinkDelete] {
+            margin: 2px  !important;
+            padding:2px  !important;
+        }
+        div.t_fixed_header.ui .headtable th {
+            padding: 5px;
+            text-align: left;
+            border-width: 0px 1px 0px 0px;
+            border-style: solid;
+        }      
+        
+        .clsPopupNotes{
+            background-color:#fffff !important;
+            border-width: 0px;
+            border-radius:10px;
+            border-style: solid;
+            z-index: 9999;
+            left: 40%;
+            top:18%;           
+            
+            position: fixed;
+            width:300px;
+            height:180px;
+        }
+        .popupBackgroundNotes{
+            background-color:black;
+            opacity: 0.50;
+            filter: alpha(opacity = 20);
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 9998;
+            top: 0;
+            left: 0;
+        } 
+    </style>     
+    
+     
+    <apex:sectionHeader title="Project" subtitle="{!Project__c.Name}">
+    </apex:SectionHeader>
+    <chatter:feedWithFollowers entityId="{!Project__c.Id}" id="chtterFeedFollower" showHeader="true" />
+    
+    <apex:form id="frm">
+    <apex:inputHidden id="hdnPillarToAdd" value="{!strPillar}" />
+    <apex:inputHidden id="hdnThematicToAdd" value="{!strThematic}" />
+    <br/> 
+    <apex:actionFunction name="actEditIndicator" action="{!EditIndicator}" status="Processing" reRender="optIndicator"  oncomplete="fnResetCheckBox();setFocusOnSave();fixHeader();fixHeader1();return false;" >
+        <apex:param value="" name="EditIndex" id="EditIndex"/>
+    </apex:actionFunction>
+    <apex:actionFunction name="actSaveIndicator" action="{!SaveIndicator}" status="Processing" reRender="optIndicator"  oncomplete="setFocusOnEdit();return false;" >
+         <apex:param value="" name="SaveIndex" id="SaveIndex"/>
+         <apex:param value="" name="SaveParentIndicator" id="ParentIndicator"/>  
+         <apex:param value="" name="SaveRelatedIndicator" id="RelatedIndicatorID"/> 
+    </apex:actionFunction>
+    
+    <apex:actionFunction name="actCancelIndicator" action="{!CancelIndicator}"  status="Processing" reRender="optIndicator"  oncomplete="setFocusOnEdit1();fixHeader();fixHeader1();return false;" immediate="true" >
+         <apex:param value="" name="CancelIndex" id="CancelIndex"/>    
+    </apex:actionFunction>
+    
+    <apex:actionFunction name="CallLogLevel" action="{!CatalogItem}"  reRender="popupLogItem1" status="Processing">
+            <apex:param name="SelectedLogLevel" id="idSelectedLogLevel" value=""/>
+    </apex:actionFunction>
+    
+   <apex:actionFunction name="CallRelatedIndicator" action="{!RelatedIndicatorItem}"  reRender="popupRelatedIndicator" status="Processing">
+            <apex:param name="searchString" id="idsearchString" value=""/>
+            <apex:param name="IndicatorID" id="IndicatorID" value=""/>
+    </apex:actionFunction>
+    
+                        
+    <apex:actionFunction id="idactAddIndicator" name="actAddIndicator" action="{!AddIndicators}" status="Processing" reRender="optIndicator,optCatalogIndicator" oncomplete="fnfixheader(); funsetHeight();return false;" />   
+    <apex:inputHidden id="hdnStrIndicatorId" value="{!StrIndicatorId }"/>  
+    <apex:pageBlock id="pgBlock1">
+        <apex:pageBlockSection columns="2">
+            <apex:pageBlockSectionItem >
+                <apex:outputText value="Project Manager:"/>
+                <apex:outputField value="{!Project__c.Project_Manager__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputText value="Project Start Date:"/>
+                <apex:outputField value="{!Project__c.Start_Date__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputText value="Primary Thematic Area:"/>
+                <apex:outputField value="{!Project__c.Primary_Technical_Area_s__c}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputText value="Project End Date:"/>
+                <apex:outputField value="{!Project__c.End_Date__c}"/>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+    
+    <apex:pageBlock id="pgBlockSearch" title="Search Catalog Indicators">
+         
+        <div>
+            <table width="100%">            
+            <tr>
+                <td colspan="2" width="30%"><p>Filter by any or all of the below criteria.</p></td>
+                <td><B>Thematic Area</B></td>
+                <td><B>Pillar</B></td>
+            </tr>
+            <tr>
+                <td class="setfontStyle" valign="top" width="10%">
+                    Keywords
+                </td>
+                <td valign="top" width="20%">
+                    <apex:inputField value="{!objCatalogIndicator.Description__c}" style="resize:none;"/>
+                </td>
+                <td rowspan="4" valign="top" class="setfontStyle" width="35%">
+                    <apex:panelGrid columns="3" id="pnlGrid1" style="text-align:center;width:'100%';" >                            
+                       <apex:selectList id="ddlleft1" multiselect="true" size="5" style="width:170px;height:186px;" >
+                           <apex:selectOptions value="{!lstThematicAreaAvailable}" />
+                       </apex:selectList>
+                       <apex:panelGroup >
+                            
+                            <a href='javascript:void(0);' style="text-decoration:none;Padding-top:10px;">
+                            <img id='btnright' onclick='return GetObjForNew1(this);' src="/s.gif" alt="Select" class="rightArrowIcon" title="Select"/></a>
+                            
+                            <br/><br/>
+                            <a  href='javascript:void(0);' style="text-decoration:none;Padding-top:10px;">
+                            <img src="/s.gif" id='btnleft' onclick='return GetObjForNew1(this);'  alt="Unselect" class="leftArrowIcon" title="Unselect"/></a>                                        
+                        </apex:panelGroup>
+                       <apex:selectList id="ddlright1"  multiselect="true" size="5" style="width:170px;height:186px;">
+                           <apex:selectOptions value="{!lstThematicAreaSelected}" />
+                       </apex:selectList>  
+                    </apex:panelGrid> 
+                </td>
+                
+                
+                <td rowspan="4" valign="top" class="setfontStyle" width="35%">
+                    <apex:panelGrid columns="3" id="pnlGrid" style="text-align:center;width:'100%';" >                            
+                       <apex:selectList id="ddlleft" multiselect="true" size="5" style="width:170px;height:186px;" >
+                           <apex:selectOptions value="{!lstAvailable}" />
+                       </apex:selectList>
+                       <apex:panelGroup >
+                            
+                            <a href='javascript:void(0);' style="text-decoration:none;Padding-top:10px;">
+                            <img id='btnright' onclick='return GetObjForNew(this);' src="/s.gif" alt="Select" class="rightArrowIcon" title="Select"/></a>
+                            
+                            <br/><br/>
+                            <a  href='javascript:void(0);' style="text-decoration:none;Padding-top:10px;">
+                            <img src="/s.gif" id='btnleft' onclick='return GetObjForNew(this);'  alt="Unselect" class="leftArrowIcon" title="Unselect"/></a>                                        
+                        </apex:panelGroup>
+                       <apex:selectList id="ddlright"  multiselect="true" size="5" style="width:170px;height:186px;">
+                           <apex:selectOptions value="{!lstSelected}" />
+                       </apex:selectList>  
+                    </apex:panelGrid>
+                </td>
+            </tr>
+            <tr>
+                <td class="setfontStyle" valign="top" >
+                    Data Type:
+                </td>
+                <td valign="top">
+                     <apex:inputField value="{!objCatalogIndicator.Data_Type__c}" style="Width:114px;"/>
+                </td>
+                
+            </tr>
+            <tr>
+                <td class="setfontStyle" valign="top">
+                    Log Level:
+                </td>
+                <td style="padding-right:20px;" colspan="3" valign="top">
+                    <apex:inputField value="{!objCatalogIndicator.Indicator_Level__c}" style="Width:114px;"/> 
+                </td>
+            </tr>
+            <tr>
+                <td class="setfontStyle" valign="top">
+                    Original Project:
+                </td>
+                <td style="padding-right:20px;" colspan="3" valign="top">
+                    <apex:inputField value="{!objCatalogIndicator.Project_That_Created_This_Indicator__c}"/> 
+                </td>
+            </tr>
+          
+            </table>
+                <div style="text-align:center;">
+                     <apex:commandLink id="btnSearch" styleClass="TGFbtn TGFbtn-mini TGFbtn-primary" action="{!SearchCatalogIndicator}" status="Processing" rerender="optCatalogIndicator"  oncomplete="setButtonVisiblity();fixHeader1();return false;" style="text-decoration:none;">
+                        <strong style="color:white;">Search</strong>
+                    </apex:commandLink>   
+                </div>
+            </div>
+    </apex:pageBlock>
+    <apex:inputHidden id="hdnSelectedCheckBox" value="{!IndicatorsToDisplay}" />
+     
+    <apex:pageBlock id="PgBlockCatalogIndi" >
+        <apex:outputPanel id="optCatalogIndicator">
+        <div style="overflow-x:auto;overflow-y:auto;height:{!if(lstCatalogIndicator.size >= 5,'250px','auto')};">
+        <apex:pageBlockTable value="{!lstCatalogIndicator}" var="objCatalogIndicator" id="PgBlockTCatalogIndicator" >
+                <apex:column id="colCheckbox" headerclass="clsCheckbox" width="3%">
+                    <apex:facet name="header">
+                        <apex:inputCheckbox style="color:rgb(1, 91, 167);" styleClass="chkClsCheckedMain"  ></apex:inputCheckbox> 
+                    </apex:facet>
+                    <apex:inputHidden value="{!objCatalogIndicator.id}"/>
+                    <apex:inputCheckbox style="color:rgb(1, 91, 167);" styleClass="chkClsCheckedId"  >
+                    </apex:inputCheckbox> 
+                </apex:column>
+               
+                <apex:column headerValue="Name" id="colType1" width="8%">  
+                    <apex:outputField value="{!objCatalogIndicator.Name}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Thematic Area" id="colTArea1" width="10%">  
+                    <apex:outputField value="{!objCatalogIndicator.Technical_Area_s__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Pillar" width="10%">  
+                    <apex:outputField value="{!objCatalogIndicator.Pillar__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Definition" id="colDesc1" style="white-space:{!if(LEN(objCatalogIndicator.Description__c)>60,'','nowrap')}; width=34%;"> 
+                    <apex:outputLink target="_blank" value="/{!objCatalogIndicator.id}" style="text-decoration:underline;">{!objCatalogIndicator.Description__c} </apex:outputLink>
+                </apex:column>
+                
+                <apex:column headerValue="Data Type" id="colDatatype1" width="10%"> 
+                    <apex:outputField value="{!objCatalogIndicator.Data_Type__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Indicator Level" width="10%"> 
+                    <apex:outputField value="{!objCatalogIndicator.Indicator_Level__c}"></apex:outputField>
+                </apex:column>
+                <apex:column headerValue="Original Project" width="15%"> 
+                    <apex:outputField value="{!objCatalogIndicator.Project_That_Created_This_Indicator__c}"></apex:outputField>
+                </apex:column>
+         </apex:pageBlockTable>
+        
+         </div>
+         </apex:outputPanel>
+             <div style="padding-top:8px;">
+             <apex:commandLink id="cmdAddIndicators" styleClass="TGFbtn TGFbtn-mini TGFbtn-success" onclick="CheckIndicatorSelected();return false;" style="text-decoration:none;">
+                <i class="icon-plus-sign icon-white"></i>
+                <strong style="color:white;">Add Indicator(s)</strong>
+             </apex:commandLink>
+             </div>
+         
+         <br/>
+         
+         </apex:pageblock>
+         <!--BOTTOM INDICATOR TABLE: SHOWS INDICATORS THAT ARE PART OF THIS PROJECT-->
+         <apex:pageBlock id="PgBlockIndi" title="Manage Indicators" >                
+         <apex:outputPanel id="optIndicator">
+        
+         <!--<div style="overflow-x:auto;width:1260px;overflow-y:auto;max-height:200px;">--><!--max-height:450px;-->
+         <apex:variable var="index" value="{!0}"/>
+         <div style="overflow-x:auto;overflow-y:auto;height:{!if(lstWrpIndicators.size > 10,'400px','auto')};">
+         <apex:pageBlockTable width="100%"   value="{!lstWrpIndicators}" var="objWrpIndicator" id="PgBlockTIndicator"  >              
+                <apex:column id="colParent" headerValue="Log Item"  width="7%" style="word-wrap: break-word;text-align: center;">                     
+                    <apex:facet name="header">
+                        <apex:commandLink id="cmdRLog" action="{!sortDataMainGrid}" oncomplete="fixHeader();return false;"  value="Log Item {!IF(sortExpressionMainGrid == 'Parent_Indicator__r.Code__c',IF(sortDirectionMainGrid =='ASC','▲','▼'),'')}" status="Processing" reRender="optIndicator" style="color:#ffffff !important;">
+                            <apex:param value="Parent_Indicator__r.Code__c" name="column" assignTo="{!sortExpressionMainGrid}"></apex:param>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <!--<apex:outputField id="optparentIndicator" value="{!objWrpIndicator.objIndicator.Parent_Indicator__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}"></apex:outputField>-->
+                    <apex:outputField id="optparentIndicator" value="{!objWrpIndicator.objIndicator.Parent_Indicator__r.Code__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}"></apex:outputField>
+                    <apex:outputPanel rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}" style="Width:110px;">
+                            <apex:inputText id="inpparentIndicator"  value="{!objWrpIndicator.objIndicator.Parent_Indicator__r.name}" style="width:50px;"/>
+                         <apex:commandLink status="Processing"  id="cmdParent"  onclick="return AddCatalogItem('{!index}','{!objWrpIndicator.objIndicator.Indicator_Level__c}');" >
+                                <img src="/s.gif" class="lookupIcon"/>
+                        </apex:commandLink>
+                    </apex:outputPanel>
+                </apex:column>
+                <apex:column width="22%" headerValue="Definition" id="colDesc2" style="word-wrap: break-word;white-space:{!if(LEN(objWrpIndicator.objIndicator.Description__c)>60,'','nowrap')};"> 
+                    <apex:inputField value="{!objWrpIndicator.objIndicator.Description__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}" style="width:80%"/>
+                    <apex:outputField value="{!objWrpIndicator.objIndicator.Description__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}" ></apex:outputField>
+                </apex:column>
+                
+                <!--<apex:column headerValue="Name" id="colName2">                     
+                    <apex:outputField value="{!objWrpIndicator.objIndicator.Name}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}"></apex:outputField>
+                </apex:column>-->
+                
+                <apex:column headerValue="Thematic Area" id="colTArea2"  style="word-wrap: break-word;" width="6%">
+                    <apex:outputField value="{!objWrpIndicator.objIndicator.Technical_Area_s__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}"></apex:outputField>
+                    <apex:selectList style="width:100px;" value="{!objWrpIndicator.objIndicator.Technical_Area_s__c}" multiselect="false" size="1" rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}"> 
+                           <apex:selectOptions value="{!Thematic}" />
+                    </apex:selectList>
+                </apex:column>
+                
+                
+                <apex:column headerValue="Pillar" id="colPillar" style="word-wrap: break-word;" width="10%"> 
+                    <apex:inputField style="width:105px;"  value="{!objWrpIndicator.objIndicator.Pillar__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}"/>
+                    <apex:outputField value="{!objWrpIndicator.objIndicator.Pillar__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}" ></apex:outputField>
+                </apex:column>
+                
+                <apex:column headerValue="Data Type" id="colDatatype2" style="word-wrap: break-word;" width="5%"> 
+                    <apex:inputField id="inpCnt" style="width:90px;"  value="{!objWrpIndicator.objIndicator.Data_Type__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}" onchange="return checkDisable(this,this.value);"  /> 
+                    <apex:outputField value="{!objWrpIndicator.objIndicator.Data_Type__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}"></apex:outputField>
+                </apex:column>
+                
+                 <apex:column headerValue="Aim" id="colAim2" style="text-align:center !important;word-wrap: break-word;" width="5%"> 
+                    <apex:inputField value="{!objWrpIndicator.objIndicator.Aim__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}"></apex:inputField>
+                    <apex:image rendered="{!if(objWrpIndicator.objIndicator.Aim__c == 'Increase' && (objWrpIndicator.blnEdit == false || (objWrpIndicator.blnEdit == false && objWrpIndicator.objIndicator.Parent_Indicator__c != null)),true,false)}" value="{!$Resource.GreenArrow}" width="20px" height="15px"/>
+                    <apex:image rendered="{!if(objWrpIndicator.objIndicator.Aim__c == 'Decrease' && (objWrpIndicator.blnEdit == false || (objWrpIndicator.blnEdit == false && objWrpIndicator.objIndicator.Parent_Indicator__c != null)),true,false)}" value="{!$Resource.RedArrow}" width="20px" height="15px"/>
+                </apex:column>
+                
+                <apex:column id="colFreq2" style="word-wrap: break-word;" width="8%"> 
+                    <apex:facet name="header">
+                        <apex:commandLink id="cmdRFrequency" action="{!sortDataMainGrid}" oncomplete="fixHeader();return false;"  value="Reporting Frequency {!IF(sortExpressionMainGrid == 'Reporting_Frequency__c',IF(sortDirectionMainGrid =='ASC','▲','▼'),'')}" status="Processing" reRender="optIndicator" style="color:#ffffff !important;">
+                            <apex:param value="Reporting_Frequency__c" name="column" assignTo="{!sortExpressionMainGrid}"></apex:param>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:inputField style="width:100px;"  value="{!objWrpIndicator.objIndicator.Reporting_Frequency__c}"  rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}" ></apex:inputField>
+                    <apex:outputField value="{!objWrpIndicator.objIndicator.Reporting_Frequency__c}" rendered="{!if(objWrpIndicator.blnEdit == true,false,true)}"></apex:outputField>
+                </apex:column>
+                
+                <apex:column id="colGD2" style="word-wrap: break-word;word-break: break-all;" width="3%">
+                    <apex:facet name="header" >
+                        <apex:commandLink id="cmdGd" action="{!sortDataMainGrid}" oncomplete="fixHeader();return false;"  value="By Geography {!IF(sortExpressionMainGrid == 'Geographical_Disaggregation__c',IF(sortDirectionMainGrid =='ASC','▲','▼'),'')}" status="Processing" reRender="optIndicator" style="color:#ffffff !important;white-space: pre-wrap;">
+                            <apex:param value="Geographical_Disaggregation__c" name="column" assignTo="{!sortExpressionMainGrid}"></apex:param>
+                        </apex:commandLink>
+                    </apex:facet> 
+                    <apex:inputField style="width:90px;"  value="{!objWrpIndicator.objIndicator.Geographical_Disaggregation__c}"  rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}"></apex:inputField>
+                    <apex:outputField style="word-break: break-all;"  value="{!objWrpIndicator.objIndicator.Geographical_Disaggregation__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}"></apex:outputField>
+                </apex:column>
+                
+                <apex:column id="colGender" headerValue="By Gender" width="5%" style="word-wrap: break-word;text-align: center;">                     
+                    <apex:inputField id="gen" value="{!objWrpIndicator.objIndicator.Gender_Disaggregation__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}"></apex:inputField>
+                    <apex:outputField value="{!objWrpIndicator.objIndicator.Gender_Disaggregation__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}"></apex:outputField>
+                </apex:column>
+                <apex:column id="colAge" headerValue="By Age"  width="3%" style="word-wrap: break-word;text-align: center;">                     
+                    <apex:inputField id="age" value="{!objWrpIndicator.objIndicator.Age_Disaggregation__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}"></apex:inputField>
+                    <apex:outputField value="{!objWrpIndicator.objIndicator.Age_Disaggregation__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}"></apex:outputField>
+                </apex:column>
+                <apex:column id="colLog" headerValue="Log Level" width="7%" style="word-wrap: break-word;text-align: center;">                     
+                    <apex:inputField style="width:80px;" value="{!objWrpIndicator.objIndicator.Indicator_Level__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}"></apex:inputField>
+                    <apex:outputField value="{!objWrpIndicator.objIndicator.Indicator_Level__c}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}"></apex:outputField>
+                </apex:column>
+                <apex:column id="colRelatedIndicator" width="6%" style="word-wrap: break-word;text-align: center;">                     
+                <apex:facet name="header">Related<br/>Indicator</apex:facet>                
+                    <apex:outputField id="optRelatedIndicator" value="{!objWrpIndicator.objIndicator.Related_Indicator__r.Name}" rendered="{!if(objWrpIndicator.blnEdit == true ,false,true)}"></apex:outputField>
+                    <apex:outputPanel rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}" style="Width:90px;">
+                            <apex:inputText id="inpRelatedIndicator"  value="{!objWrpIndicator.objIndicator.Related_Indicator__r.name}" style="width:50px;"/>
+                         <apex:commandLink status="Processing"  id="cmdRelatedIndicator"  onclick="return AddRelatedIndicator('{!index}','{!objWrpIndicator.objIndicator.Related_Indicator__r.Name}','{!objWrpIndicator.objIndicator.id}');" >
+                                <img src="/s.gif" class="lookupIcon"/>
+                        </apex:commandLink>
+                    </apex:outputPanel>
+                    
+                </apex:column>
+                <apex:column id="colButton2" headerValue="Action" width="12%" style="text-align: Center;"> 
+                    <span class="clsbtnVisibility" style="display:none;">{!objWrpIndicator.blnEdit}</span>
+                    <span class="clsbtnAction" style="text-align: center;">
+                    <apex:commandLink id="cmdLinkEdit"  styleClass="TGFbtn TGFbtn-mini TGFbtn-primary"  onclick="return editIndicatorFetchIndex('{!index}','{!objWrpIndicator.objIndicator.Parent_Indicator__c}', '{!objWrpIndicator.objIndicator.Related_Indicator__c}');"   rendered="{!if(objWrpIndicator.blnEdit == false && objWrpIndicator.blnAddIndicator = false ,true,false)}" style="text-decoration:none;padding:3px;">
+                        <!--<i class="icon-edit icon-white"></i>-->
+                        <strong style="color:white;">Edit</strong>
+                    </apex:commandLink>
+                   
+                    <apex:commandLink id="cmdLinkSave"  styleClass="TGFbtn TGFbtn-mini TGFbtn-success " onclick="return SaveIndicatorFetchIndex('{!index}');" rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}" style="text-decoration:none;text-align: right;padding: 3px;" >
+                        <strong style="color:white;">Save</strong>                                        
+                    </apex:commandLink>
+                
+                    <apex:commandLink id="cmdLinkCancel" styleClass="TGFbtn TGFbtn-mini TGFbtn-danger" onclick="return CancelIndicatorFetchIndex('{!index}');" rendered="{!if(objWrpIndicator.blnEdit == true ,true,false)}" style="text-decoration:none;text-align: right;padding: 3px;"    >
+                        <strong style="color:white;">Cancel</strong>
+                    </apex:commandLink>
+                  
+                    <apex:commandLink id="cmdLinkDelete" styleClass="TGFbtn TGFbtn-mini TGFbtn-danger" action="{!DeleteIndicator}" status="Processing" reRender="optIndicator,PgBlockCatalogIndi" rendered="{!if(objWrpIndicator.blnEdit == false  && objWrpIndicator.blnAddIndicator = false ,true,false)}" onClick="if(!confirmDeleteIndicator()) return false;" style="text-decoration:none;padding:3px;" oncomplete="fnfixheader(); funsetHeight();return false;" >
+                        <apex:param value="{!index}" name="DeleteIndex"/>
+                        <!--<i class="icon-trash icon-white"> Delete</i>-->
+                        <strong style="color:white;">Delete</strong>
+                    </apex:commandLink>
+                    
+                    <apex:commandLink id="cmdNote"  styleClass="TGFbtn TGFbtn-mini TGFbtn-primary" onclick="OpenPopupNote('{!$Component.popupNotes}','{!objWrpIndicator.objIndicator.Notes__c}');return false;" status="Processing"    rendered="{!if(objWrpIndicator.blnEdit == false && objWrpIndicator.blnAddIndicator = false ,true,false)}"  style="text-decoration:none;padding:3px; height:20px; width: 20px;">
+                        <i class="icon-edit icon-white cmdNoteIconStyle" >  </i>
+                    </apex:commandLink>
+                    <apex:outputPanel id="popupNotes"  style="display:none;background-color:#fff !important;">
+                        <apex:outputPanel id="popupNotesBackground2" styleClass="popupBackgroundNotes"/>
+                        <apex:outputPanel id="popupStyle2" styleClass="clsPopupNotes" >
+                           
+                            <table width="100%" class="cstblpopup1" cellspacing="0" cellpadding="0" border="0" style="background-color:#fff !important; height:180px;" >
+                                <tr>
+                                    <td style="background: lightgray !important;padding: 8px 8px 8px 8px;">
+                                        <apex:outputtext style="font-weight: bold;" value="Notes"/>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>
+                                        <apex:inputField id="inpNotes" value="{!objWrpIndicator.objIndicator.Notes__c}" style="resize:none;width:275px;" />                                        
+                                        <!--<apex:outputField id="inpNotes1" rendered="{!if(objWrpIndicator.blnEdit == false,true,false)}"  value="{!objWrpIndicator.objIndicator.Notes__c}" style="resize:none;width:275px;" />-->
+                                    </td>
+                                </tr>          
+                                <tr>                   
+                                    <td width="47%" align="center" class="cstblbutton">  
+                                        <apex:commandLink id="cmdLinkOk" style="text-decoration:none;" styleClass="TGFbtn TGFbtn-mini TGFbtn-success" action="{!SaveIndicator}" status="Processing" reRender="optIndicator"   >
+                                            <strong style="color:white;">Save</strong> 
+                                            <apex:param value="{!index}" name="SaveIndex1"/>                                         
+                                        </apex:commandLink>
+                                    
+                                        <apex:commandLink id="cmdLinkCancelpopup" style="text-decoration:none;" styleClass="TGFbtn TGFbtn-mini TGFbtn-danger" onclick="ClosePopupNote('{!$Component.popupNotes}' , '{!$Component.inpNotes}');return false;" status="Processing"  >
+                                            <strong style="color:white;">Cancel</strong>
+                                        </apex:commandLink>
+                                        
+                                    </td>
+                                </tr>
+                            </table>
+                        </apex:outputPanel>
+                    </apex:outputPanel> 
+                    <apex:variable var="index" value="{!index+1}"/>
+                    </span>
+                </apex:column>
+                
+         </apex:pageBlockTable>
+         </div>
+         <!--</div>-->
+        <div style="padding-top:8px;">
+        <span class="clsbtnAction">
+            <apex:commandLink id="cmdAddCustomIndicator" styleClass="TGFbtn TGFbtn-mini TGFbtn-success" status="Processing" reRender="optIndicator" action="{!AddNewIndicator}" rendered="{!if(blnAddIndicatorDisplay ==true,false,true)}" oncomplete="funsetHeight();fixHeader();return false;" style="text-decoration:none;">
+                <i class="icon-plus-sign icon-white"></i>
+                <strong style="color:white;">Add Custom Indicator</strong>
+            </apex:commandLink>
+        </span>    
+        </div>
+     </apex:outputPanel>
+     <div style="text-align:center;">
+        <apex:commandLink styleClass="TGFbtn TGFbtn-mini TGFbtn-primary" action="/{!ProjectId}" style="text-decoration:none;">
+            <strong style="color:white;">Return To Project</strong>
+        </apex:commandLink>
+    </div>                    
+</apex:pageBlock>
+    <apex:outputPanel id="popupLogItem1">
+    <apex:outputPanel id="popupLogItem" rendered="{!if(blnShowPopup == true,true,false)}">
+        <apex:outputPanel id="popup2" styleClass="popupBackgroundLog"/>
+        <apex:outputPanel id="popupinner2" styleClass="clsPopupLog">
+        <div height="100%" style="padding: 5px;">
+           <apex:pageBlock title="Search Catalog">
+            <table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0" >
+                <tr>
+                    <td >
+                        <apex:outputtext value="Log Level:"/>
+                    </td>
+                    <td colspan="2">
+                        <apex:inputField value="{!objLogItem.Indicator_Level__c}"/>
+                    </td>
+                </tr> 
+                <tr>
+                    <td>
+                        <apex:outputtext value="Keywords:"/>
+                    </td>
+                    <td>
+                        <apex:inputtext value="{!objLogItem.Description__c}"/>
+                    </td>
+                    <td>
+                        <apex:commandButton action="{!CatalogItem}" value="Go" reRender="opCatalogIndicator"/>
+                    </td>
+                </tr>          
+                <tr />
+                <tr />
+            </table>
+            <apex:outputPanel id="opCatalogIndicator">
+                <apex:outputPanel rendered="{!if(lstLog_Item.size > 0,true,false)}">
+                    <div style="overflow-x:auto;overflow-y:auto;height:{!if(lstLog_Item.size >= 5,'310px','auto')};">
+                    <apex:pageBlockTable id="pbtLogLevel" width="100%" value="{!lstLog_Item}" var="objIndicator">              
+                        <apex:column headerValue="Name" width="15%" > 
+                            <apex:commandLink value="{!objIndicator.Name}" onclick="return SetCatalogIndex('{!$Component.popupLogItem}','{!objIndicator.id}','{!objIndicator.Name}');" reRender="abc"/>
+                        </apex:column>
+                        <apex:column headerValue="Description" width="65%"> 
+                            <apex:outputField value="{!objIndicator.Description__c}"></apex:outputField>
+                        </apex:column>
+                        <apex:column headerValue="Indicator Level" width="20%"> 
+                            <apex:outputField value="{!objIndicator.Indicator_Level__c}"></apex:outputField>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                    </div>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0" >
+                <tr />
+                <tr>
+                    <td style="text-align:center;">
+                        <apex:commandButton value="Close"  onclick="return CloseSetCatalogPopup('{!$Component.popupLogItem}');" reRender="opCatalogIndicator"/>
+                    </td>
+                </tr> 
+                <tr />
+            </table>
+            </apex:pageBlock>
+          </div>
+        </apex:outputPanel>
+    </apex:outputPanel> 
+    </apex:outputPanel>
+    
+    
+    
+    <!--Show Popup for the Related Indicator Look up-->
+    
+    <apex:outputPanel id="popupRelatedIndicator">
+    <apex:outputPanel id="popupRelatedIndicator1" rendered="{!if(blnShowRelatedIndicatorPopup == true,true,false)}">
+        <apex:outputPanel id="popup3" styleClass="popupBackgroundLog"/>
+        <apex:outputPanel id="popupinner3" styleClass="clsPopupLog">
+        <div height="100%" style="padding: 5px;">
+           <apex:pageBlock title="Search Indicator">
+               <table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0" >
+                <tr>
+                    <td width="20%" >
+                        <apex:outputtext value="Indicator Name:"/>
+                    </td>
+                    <td width="50%" >
+                        <apex:inputtext value="{!searchString}" style="margin-bottom: 0px !important;"/>
+                    </td>
+                    <td width="30%" >
+                        <apex:commandButton action="{!bindRelatedIndicatorItem}" value="Go  " reRender="opRelatedIndicator">
+                          &nbsp;&nbsp;
+                        </apex:commandButton>
+                    </td>
+                </tr> 
+                </table>
+                <br/>
+                
+                <apex:outputPanel id="opRelatedIndicator">
+                    <apex:outputPanel rendered="{!if(lstRelatedIndicator.size > 0,true,false)}">
+                        <div style="overflow-x:auto;overflow-y:auto;height:{!if(lstRelatedIndicator.size >= 5,'310px','auto')};">
+                        <apex:pageBlockTable value="{!lstRelatedIndicator}" var="item" id="resultTable" >     
+                            <apex:column headervalue="Name" width="15%">
+                                <apex:commandLink value="{!item.Name}" onclick="return SetRelatedIndicator('{!$Component.popupRelatedIndicator}','{!item.id}','{!item.Name}');" reRender="abc"/>
+                                <!--<apex:outputLink value="javascript:top.window.opener.lookupPick2('{!FormTag}', false)" onclick="selectStaffMember('{!item.Id}','{!item.name}');return false;">{!item.Name}</apex:outputLink>-->
+                            </apex:column>
+                            <apex:column headervalue="Definition" width="68%">
+                                <apex:outputText value="{!item.Description__c}"></apex:outputText>
+                            </apex:column>
+                            <apex:column headervalue="Log Level" width="17%">
+                                <apex:outputText value="{!item.Indicator_Level__c}"></apex:outputText>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                        </div>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <br/>
+                <table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0" >
+                    <tr>
+                        <td style="text-align:center;">
+                            <apex:commandButton value="Close"  onclick="return CloseSetRelatedIndicator('{!$Component.popupRelatedIndicator}');" reRender="opRelatedIndicator"/>
+                        </td>
+                    </tr> 
+                </table>
+            </apex:pageBlock>
+          </div>
+        </apex:outputPanel>
+    </apex:outputPanel> 
+    </apex:outputPanel>
+    
+<script>
+    var EditIndex;
+    var SaveIndex;
+    var CancelIndex;
+    var ParentCatalog;
+    var OldNotes;
+    var RelatedIndicatorId;
+    function OpenPopupNote(ID,OldNote){
+        OldNotes = OldNote;
+        
+        document.getElementById(ID).style.display = '';
+    }
+    function ClosePopupNote(ID,InputId){
+        
+        document.getElementById(InputId).value = OldNotes ;
+        document.getElementById(ID).style.display = 'none';
+        
+    }
+    
+    function editIndicatorFetchIndex(eIndex,Id,RelatedIndicator){
+        EditIndex = eIndex;
+        actEditIndicator(EditIndex);
+        ParentCatalog = Id;
+        RelatedIndicatorId = RelatedIndicator;
+        return false;
+    }
+    function AddCatalogItem(eIndex,LoglevelValue){
+        EditIndex = eIndex;    
+        CallLogLevel(LoglevelValue); 
+        return false;  
+    }
+    
+    function AddRelatedIndicator(eIndex,LoglevelValue, IndicatorId){
+        EditIndex = eIndex;    
+        CallRelatedIndicator(LoglevelValue,IndicatorId); 
+        return false;  
+    }
+    
+    /*function AddRelatedIndicator(eIndex,LoglevelValue,Projectid){
+            //objName = objName.replace('Group,','');
+            var searchString = '';
+            if (LoglevelValue != null) searchString= LoglevelValue;
+            var url="/apex/CustomIndicatorLookup?searchString=" + searchString + "&ProjectId=" +Projectid;
+            newWin=window.open(url, 'Popup','height=500,width=600,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+            
+            if (window.focus){
+                newWin.focus();
+            }           
+            return false;
+        }*/
+    
+    
+    
+    
+    function SetCatalogIndex(CatalogId, Id , Name ){
+        document.getElementById(CatalogId).style.display = 'none';
+        document.getElementById("page:frm:PgBlockIndi:PgBlockTIndicator:"+EditIndex+":inpparentIndicator").value = Name;
+        ParentCatalog = Id;
+        fnScrollBottom();
+        return false;
+    }
+    function SetRelatedIndicator(IndicatorId, Id , Name ){
+        document.getElementById(IndicatorId).style.display = 'none';
+        document.getElementById("page:frm:PgBlockIndi:PgBlockTIndicator:"+EditIndex+":inpRelatedIndicator").value = Name;
+        RelatedIndicatorId = Id;
+        fnScrollBottom();
+        return false;
+    }
+    
+    function CloseSetCatalogPopup(CatalogId){
+        document.getElementById(CatalogId).style.display = 'none';
+    }
+    
+    function CloseSetRelatedIndicator(IndicatorId){
+        document.getElementById(IndicatorId).style.display = 'none';
+    }
+    
+    function setFocusOnSave(){
+    
+        var SaveButtonE = document.getElementById('page:frm:PgBlockIndi:PgBlockTIndicator:'+EditIndex+':cmdLinkSave');
+       
+        if(SaveButtonE != null){
+            SaveButtonE.focus();
+        }
+        funsetHeight();
+    }
+    
+    function SaveIndicatorFetchIndex(eIndex){
+        SaveIndex = eIndex;
+        actSaveIndicator(SaveIndex,ParentCatalog,RelatedIndicatorId);
+        
+        return false;
+    }
+    
+    function setFocusOnEdit(){
+        //var EditButtonE = document.getElementById('page:frm:PgBlockCatalogIndi:PgBlockIndi:PgBlockTIndicator:'+SaveIndex+':cmdLinkEdit');
+        var EditButtonE = document.getElementById('page:frm:PgBlockIndi:PgBlockTIndicator:'+SaveIndex+':cmdLinkEdit');
+        var DeleteButtonE = document.getElementById('page:frm:PgBlockIndi:PgBlockTIndicator:'+SaveIndex+':cmdLinkDelete');
+        if(EditButtonE != null && DeleteButtonE  != null){
+            EditButtonE.focus();
+            DeleteButtonE .focus();
+        }
+        funsetHeight();
+    }
+    
+    function CancelIndicatorFetchIndex(eIndex){
+        CancelIndex = eIndex;
+        actCancelIndicator(CancelIndex);
+        return false;
+    }
+    
+    function setFocusOnEdit1(){
+        var EditButtonE = document.getElementById('page:frm:PgBlockIndi:PgBlockTIndicator:'+CancelIndex+':cmdLinkEdit');
+        var DeleteButtonE = document.getElementById('page:frm:PgBlockIndi:PgBlockTIndicator:'+CancelIndex+':cmdLinkDelete');
+        if(EditButtonE != null && DeleteButtonE  != null){
+            EditButtonE.focus();
+            DeleteButtonE .focus();
+        }
+        funsetHeight();
+    }
+    
+    var objleft, objlefttext, objright, objrighttext,divspnid, objleftrightarrow;
+    function GetObjForNew(obj) {
+        
+        objleftrightarrow = obj;
+            
+        objleft = document.getElementById($(obj).closest('td').prev('td').find('select').attr('id'));
+        objright = document.getElementById($(obj).closest('td').next('td').find('select').attr('id'));
+        
+        if($(objleftrightarrow).attr("id") == "btnright")
+        {
+            var createobjid=$(obj).closest('td').prev('td').find('select').attr('id');
+            var SiteId = $(document.getElementById(createobjid.replace('ddlleft','hdnsiteid'))).val();
+            
+            
+            AddOne();
+        }
+        else if($(objleftrightarrow).attr("id") == "btnleft")
+        {
+            RemoveOne();
+        }
+        
+        return true;
+    }
+    
+    
+    function GetObjForNew1(obj) {
+        
+        objleftrightarrow = obj;
+            
+        objleft = document.getElementById($(obj).closest('td').prev('td').find('select').attr('id'));
+        objright = document.getElementById($(obj).closest('td').next('td').find('select').attr('id'));
+        
+        if($(objleftrightarrow).attr("id") == "btnright")
+        {
+            var createobjid=$(obj).closest('td').prev('td').find('select').attr('id');
+            var SiteId = $(document.getElementById(createobjid.replace('ddlleft1','hdnsiteid'))).val();
+            
+            
+            AddOne1();
+        }
+        else if($(objleftrightarrow).attr("id") == "btnleft")
+        {
+            RemoveOne1();
+        }
+        
+        return true;
+    }
+    
+     function AddOne1() {
+        if (objleft.selectedIndex >= 0) {
+            $(objleft).find('option:selected').each(function(i){
+                $(objright).append($("<option></option>")
+                                .attr("value",$(this).val())
+                                .text($(this).text()));
+               objrighttext =''; 
+               if(i == $(objleft).find('option:selected').length-1)
+               {
+                   
+                   var strrighttext = '';
+                   strrighttext = $(objleft).find('option:selected').map(function () {
+                        return $(this).val();
+                   }).get().join('#');
+                   
+                   $(objleft).find('option:selected').remove();
+                   
+                  
+                   
+                   var righttext = $(objright).find('option').map(function () {
+                        return $(this).val();
+                   }).get().join('#');
+                  
+                  $(document.getElementById($('input[id$=hdnThematicToAdd]').attr('id'))).val(righttext);
+                  
+               }
+            });
+        }
+    }
+   
+    function RemoveOne1() {
+            if (objright.selectedIndex >= 0) {
+                $(objright).find('option:selected').each(function(i){
+                    $(objleft).append($("<option></option>")
+                                    .attr("value",$(this).val())
+                                    .text($(this).text()));
+                    
+                   if(i == $(objright).find('option:selected').length-1)
+                   {                 
+                       var strrighttext = '';
+                       strrighttext = $(objright).find('option:selected').map(function () {
+                            return $(this).val();
+                       }).get().join('#');
+                       
+                       $(objright).find('option:selected').remove();
+                       var righttext = $(objright).find('option').map(function () {
+                            return $(this).val();
+                       }).get().join('#');
+                      
+                      $(document.getElementById($('input[id$=hdnThematicToAdd]').attr('id'))).val(righttext);
+                   }
+                });
+            }
+        }
+                
+            
+    function AddOne() {
+        if (objleft.selectedIndex >= 0) {
+            $(objleft).find('option:selected').each(function(i){
+                $(objright).append($("<option></option>")
+                                .attr("value",$(this).val())
+                                .text($(this).text()));
+               objrighttext =''; 
+               if(i == $(objleft).find('option:selected').length-1)
+               {
+                   
+                   var strrighttext = '';
+                   strrighttext = $(objleft).find('option:selected').map(function () {
+                        return $(this).val();
+                   }).get().join('#');
+                   
+                   $(objleft).find('option:selected').remove();
+                   
+                  
+                   
+                   var righttext = $(objright).find('option').map(function () {
+                        return $(this).val();
+                   }).get().join('#');
+                  
+                  $(document.getElementById($('input[id$=hdnPillarToAdd]').attr('id'))).val(righttext);
+                  
+               }
+            });
+        }
+    }
+   
+    function RemoveOne() {
+            if (objright.selectedIndex >= 0) {
+                $(objright).find('option:selected').each(function(i){
+                    $(objleft).append($("<option></option>")
+                                    .attr("value",$(this).val())
+                                    .text($(this).text()));
+                    
+                   if(i == $(objright).find('option:selected').length-1)
+                   {                 
+                       var strrighttext = '';
+                       strrighttext = $(objright).find('option:selected').map(function () {
+                            return $(this).val();
+                       }).get().join('#');
+                       
+                       $(objright).find('option:selected').remove();
+                       var righttext = $(objright).find('option').map(function () {
+                            return $(this).val();
+                       }).get().join('#');
+                      
+                      $(document.getElementById($('input[id$=hdnPillarToAdd]').attr('id'))).val(righttext);
+                   }
+                });
+            }
+        }
+        function checkDisable(obj,name){
+            if(name == 'Qualitative'){
+                 $(obj).closest('tr').find('input[type=checkbox]').attr('checked',false);     
+                 $(obj).closest('tr').find('input[type=checkbox]').attr('disabled','disabled');                                                 
+            }
+            else $(obj).closest('tr').find('input[type=checkbox]').removeAttr('disabled');  
+        }
+        
+        function fnResetCheckBox(){
+            $('select[id$=inpCnt]').trigger('change');
+        }
+        function fnScrollBottom(){
+            
+            var target = $('div[id$=PgBlockIndi]');
+                
+            $('html,body').animate({
+                scrollTop: target.offset().top
+            }, 1000);
+        }
+  
+</script>
+</apex:form>
+    <!------------- Start: Processing Div---------------------------------------->
+    <style>
+        .ProcessingBackground{
+            background-color: black;
+            opacity: 0.50;
+            filter: alpha(opacity = 50);
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            z-index: 10000;
+            top:0;
+            left:0;
+        }
+        .Processing{
+            z-index: 10001;
+            left: 50%;
+            top: 50%;
+            text-align: center;
+            position: fixed;
+        }
+        .multiSelectPicklistTable { width: 470px!important; table-layout: auto!important; }        
+    </style>
+    <div id="divProcessing" style="display:none;">
+        <div class="ProcessingBackground"></div>
+        <div class="Processing">
+            <apex:image alt="Processing"  value="/img/loading32.gif" />
+        </div>
+    </div>  
+    
+    <apex:actionStatus id="Processing" onstart="document.getElementById('divProcessing').style.display = '';" onstop="document.getElementById('divProcessing').style.display = 'none';">                            
+    </apex:actionStatus>
+    <!------------- End: Processing Div---------------------------------------->  
+
+</apex:page>

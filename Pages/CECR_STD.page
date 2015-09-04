@@ -1,0 +1,101 @@
+<apex:page controller="CECR" sidebar="false" >
+    
+    <apex:pageMessages ></apex:pageMessages>
+    
+    
+    <head>
+        <!-- Load JS here for greater good =============================-->
+        <apex:includeScript value="{!URLFOR($Resource.flatui_v1, '/Flat-UI-Pro-1.2.5/js/jquery-1.8.3.min.js')}" />
+    </head>
+    
+    <script>
+    function confirmDelete(delIndex) {
+        if(window.confirm("Are you sure?")) {
+            removeRow(delIndex);
+        }
+    }
+    function setFocusOnLoad() {}
+    </script>
+    
+    <apex:sectionHeader title="Add {!strPlural}{!IF(strMode != 'W',' - ','')}{!parentRecord[objPage.Parent_Record_Name__c]}"/>
+    
+    <apex:form id="frm" styleClass="" > 
+        
+        <apex:actionFunction action="{!removeRow}" name="removeRow" status="Status" immediate="true" reRender="frm">
+            <apex:param name="delIndex" value=""></apex:param>
+        </apex:actionFunction>
+        
+        <apex:pageblock id="mainContainer">            
+            
+            <apex:pageBlockButtons >
+                <apex:commandButton styleClass="" value="Quick Save" action="{!QuickSave}" reRender="frm,errorPanel" status="Status" />
+                <apex:commandButton styleClass="" value="Save & Close" action="{!SaveClose}"/>
+                <apex:commandButton styleClass="" value="Cancel" action="{!Cancel}" immediate="true"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1" >
+                
+                <apex:variable var="rowNum" value="{!1}" />           
+                
+                <apex:pageblockTable id="tableMainContent" value="{!childRecords}" var="rec">
+                    <!-- ROW NO. COLUMN COMMENTED <apex:column headerValue="" width="28px">
+<apex:outputText styleClass="" value="{!ROUND(rowNum,0)}." />
+</apex:column>-->
+                    <apex:column headerValue="Action" width="60px" styleClass="test-column">  
+                        
+                        <a href="javascript:void(0)" title="Delete Record" class="actionLink"  onclick="return confirmDelete('{!rowNum}');"><apex:image style="cursor:pointer;margin-right: 5px; float: right ; padding:0; padding-right: 2px;"  width="13px" height="16px" title="Delete Row" url="{!$Resource.athf_delete}"/></a>
+                        
+                        &nbsp;&nbsp;
+                        <apex:commandLink rendered="{! if(childRecords.size == rowNum, true , false )}" action="{!addRow}" rerender="frm" immediate="true" status="Status"><apex:image style="cursor: pointer;margin-top:1px; margin-right: 5px; float: right; padding: 0px;" width="14px" height="14px" title="Add Row" url="{!$Resource.add}"/></apex:commandLink>
+                        
+                        <apex:variable var="rowNum" value="{!rowNum + 1}" />
+                    </apex:column>
+                    
+                    <apex:repeat value="{!objFields}" var="f">
+                        <apex:column headerValue="{!f.label}" styleClass="test-column" style="padding: 0px; padding-top: 9px; padding-left: 15px; padding-bottom: 9px; border-left: 1px solid #cccccc; ">
+                            <apex:inputField value="{!rec[f.name]}" required="{!f.required}" rendered="{!f.input}"/>
+                            <apex:outputField styleClass="test-column" value="{!rec[f.name]}" rendered="{!!f.input}" style=" padding-bottom: 20px;"/>
+                        </apex:column>
+                    </apex:repeat>
+                </apex:pageblockTable>
+            </apex:pageBlockSection>
+            
+            
+        </apex:pageblock>
+        
+        <script>
+        
+        function resetSizes(){
+            j$ = jQuery.noConflict();   
+            
+            j$(".pbSubsection:eq( 0 )").attr("style" , "overflow-x: auto; overflow-y:  hidden;");
+            j$(".pbSubsection:eq( 0 )").width(j$("#tabContainer").width()-50);
+            j$(".tertiaryPalette").attr('style' , ' background : #1797c0;');
+        }
+        
+        resetSizes();
+        
+        $(window).resize(resetSizes());
+        
+        </script>
+        
+        
+        <apex:actionStatus id="Status">
+            <apex:facet name="start">
+                
+                <div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;
+                                                                     height: 100%;opacity:0.8;width:100%;"> 
+                    <div class="waitingHolder" style="top: 48%; width: 91px;"> <!--style="top: 74.2px; width: 91px;"-->
+                        <img class="waitingImage" src="/img/loading.gif" title="Please Wait..." />
+                        <span class="waitingDescription">Loading...</span>
+                    </div>
+                </div>
+                
+            </apex:facet>
+            
+            <apex:facet name="stop"> </apex:facet>           
+            
+        </apex:actionStatus>
+        
+    </apex:form>    
+    
+</apex:page>

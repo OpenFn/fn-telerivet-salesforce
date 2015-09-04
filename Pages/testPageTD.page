@@ -1,0 +1,281 @@
+<!-- ************************************************************************
+* VisualForce Page: ManagePublicGroups
+* Created by {developerName}, {dateCreated 03/26/2013}
+
+* - It is allow user to add into Group.
+
+************************************************************************  -->
+<apex:page controller="ManagePublicGroups" id="page"  >
+
+<apex:form id="frm">
+<style>
+table td.tdStyle{text-align:left;}
+.divTextSearch > input[type='text'] {
+    background-image: url("/img/setup/search.png");
+    background-position: 175px 4px;
+    background-repeat: no-repeat;
+    border: 1px solid #999999;
+    border-radius: 4px;
+    height: 16px;
+    margin-left: 0;
+    padding: 5px 20px 5px 8px;
+    width: 145px;
+}
+</style>
+<!--<script src="{!URLFOR($Resource.jquery_1_9_1_min)}" type="text/javascript"></script> -->
+<!-- <script src="{!URLFOR($Resource.jquery_sieve_min_js)}" type="text/javascript"></script>  -->
+
+
+<script>
+    $(document).ready(function() {
+       searchMain();
+    }); 
+    function searchMain(){
+        
+        $(".clsSearch,.clsSearchGroup1,.clsSearchGroup2").siblings('.divTextSearch').remove();
+        $(".clsSearch,.clsSearchGroup1,.clsSearchGroup2").prev('br').remove();
+        setTimeout(function(){
+            $(".clsSearch,.clsSearchGroup1,.clsSearchGroup2").sieve({itemSelector:"option"});
+            $(".clsSearch,.clsSearchGroup1,.clsSearchGroup2").siblings('.divTextSearch').find('input[type=text]').attr('placeholder','Quick Find').css({width:'88%'});
+        },100);
+        
+   }
+</script>
+
+    <apex:sectionHeader title="Manage Public Groups" />
+    <apex:pageMessages id="myMsg" />
+    <apex:pageBlock id="mainPGBlock"  >
+     
+        <apex:pageBlockSection title="View By" collapsible="false"  >
+                <apex:selectRadio value="{!strGroups}"  style="width: 50%">
+                    <apex:selectOptions value="{!items}" />
+                    <apex:actionSupport event="onclick" action="{!loadUserOnclick}" status="Processing" reRender="frm"  />
+                </apex:selectRadio>        
+        </apex:pageBlockSection>
+       
+        <apex:outputPanel rendered="{!IF(blnSelectoption != true , true, false)}" id="optPanelUser" >
+         <script>
+             
+            function showUser()
+            {   
+                actshowGroup();
+            }
+            
+        </script>
+        <table width="100%" style="margin-top: -20px;">
+            <tr>
+                <td  width="30%">
+                    <apex:pageBlockSection title="Users" columns="1"  collapsible="false" id="UserPGSection" >
+                    
+                    <apex:pageBlockSectionItem id="UserPGSectionitem">
+                   
+                    <apex:outputPanel >
+                    <b>All User(s)</b><br/><br/>
+                    <div style="width:86%;">
+                    <apex:actionFunction name="actshowGroup" action="{!selectGroupOnUser}" reRender="selGroup,selToAddGroup" status="Processing" oncomplete="searchMain();" >
+                    </apex:actionFunction>
+                    <apex:selectList styleClass="clsSearch" id="selUserMain" value="{!idOfSelectedUser}" multiselect="false" size="15" style="width:260px;" onclick="showUser();">
+                        <apex:selectOptions value="{!lstOfUser}"> </apex:selectOptions>
+                    </apex:selectList>
+                    </div>
+                    </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                    
+                </td>
+                <td width="70%">
+                    <apex:pageBlockSection id="pBSectionGroup" title="Groups" columns="3"  collapsible="false">
+                        <apex:pageBlockSectionItem id="pBSectionItemGroup">
+                        <apex:outputPanel >
+                        <table align="center" cellspacing="0" cellpadding="0" width="100%">
+                       
+                        <tr>
+                            <td class="tdStyle" align="center" width="40%">
+                                <b>Available Group(s)</b><br/><br/>
+                            </td>
+                            <td width="20%">&nbsp;</td>                
+                            <td class="tdStyle" align="center"  width="40%"><b>Selected Group(s)</b><br/><br/></td>
+                        </tr>
+                        
+                        <tr>
+                            <td width="40%">
+                                <apex:selectList styleClass="clsSearchGroup1" id="selGroup" value="{!strSelectedGroup}" multiselect="true" size="15" style="width:260px;"  >
+                                    <apex:selectOptions value="{!lstSelectedGroup}"> </apex:selectOptions>
+                                </apex:selectList>
+                            </td>
+                            <td align="center" width="20%" style="vertical-align: middle;Padding-Bottom:5px;padding-left:3px;padding-right:3px;"> <br/><br/>  
+                                Add <br/>                          
+                               <apex:commandLink style="text-decoration:none;Padding-top:10px;" action="{!addToGroups}" status="Processing" reRender="selGroup,selToAddGroup,myMsg" oncomplete="searchMain();" >                               
+                                  <img src="/s.gif" alt="Select" class="rightArrowIcon" title="Select"/>                           
+                               </apex:commandLink>
+                               <br/>                  
+                                <apex:commandLink style="text-decoration:none;Padding-top:10px;" onclick="return DeleteFromGroup();" oncomplete="searchMain();">                               
+                                  
+                                   <img src="/s.gif" alt="Unselect" class="leftArrowIcon" title="Unselect"/>                                                     
+                               </apex:commandLink> 
+                               <apex:actionFunction action="{!removeFromGroups}" name="callDeleteFromGroup" status="Processing" reRender="selGroup,selToAddGroup" oncomplete="searchMain();" >
+                               </apex:actionFunction>
+                               <br/>
+                               Remove
+                               <br/>
+                           </td>               
+                            <td width="40%">
+                                <apex:selectList styleClass="clsSearchGroup2" id="selToAddGroup" value="{!strSelectedToAddGroup}" multiselect="true" size="15" style="width:260px;">
+                                    <apex:selectOptions value="{!lstSelectedToAddGroup}"> </apex:selectOptions>
+                                </apex:selectList>
+                            </td>
+                        </tr>
+                    </table> 
+                    </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!IF(blnSelectoption == true , true, false)}" id="optPanelGroup">
+        <script>
+            function showgroup()
+            {              
+                actshowGroup();
+            }
+            
+        </script>
+        <table width="100%" style="margin-top: -20px;">
+            <tr>
+                <td width="30%">
+                    <apex:pageBlockSection title="Groups" columns="1"  collapsible="false" id="GroupPGSection" >
+                    <apex:pageBlockSectionItem id="GroupPGSectionitem">
+                    
+                    <apex:outputPanel >
+                    <b>All Group(s)</b><br/><br/>
+                    <div style="width:86%;">
+                    <apex:actionFunction name="actshowGroup" action="{!selectUserOnGroup}" reRender="selUsers,selToAddUsers" status="Processing" oncomplete="searchMain();">
+                    </apex:actionFunction>
+                    <apex:selectList styleClass="clsSearch" id="selGroupMain" value="{!idOfSelectedGroup}" multiselect="false" size="15" style="width:260px;" onclick="showgroup();">
+                        <apex:selectOptions value="{!lstOfGroup}"> </apex:selectOptions>
+                    </apex:selectList>
+                    </div>
+                    </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    
+                    </apex:pageBlockSection>
+                    
+                </td>
+                <td width="70%">
+                    <apex:pageBlockSection title="Users" columns="3"  collapsible="false" id="pageBSectionGroup">
+                        <apex:pageBlockSectionItem id="pageBSectionItemGroup">
+                        <apex:outputPanel >
+                        <table  cellspacing="0" cellpadding="0">
+                       
+                        <tr>
+                            <td class="tdStyle" align="center" width="40%">
+                                <b>Available User(s)</b><br/><br/>
+                            </td>
+                            <td width="20%">&nbsp;</td>                
+                            <td class="tdStyle" width="40%" align="center"><b>Selected User(s)</b><br/><br/></td>
+                        </tr>
+                        <tr>
+                            <td width="40%">  
+                                       
+                                <apex:selectList styleClass="clsSearch" id="selUsers" value="{!strSelectedUser}" multiselect="true" size="15"  style="width:260px;">
+                                    <apex:selectOptions value="{!lstSelectedUser}"> </apex:selectOptions>
+                                </apex:selectList>
+                            </td>
+                            <td align="center" width="20%" style="vertical-align: middle;Padding-Bottom:5px;padding-left:3px;padding-right:3px;"> <br/><br/>  
+                                Add <br/>                          
+                               <apex:commandLink style="text-decoration:none;Padding-top:10px;" action="{!addToUsers}" status="Processing" reRender="selUsers,selToAddUsers" oncomplete="searchMain();">                               
+                                  
+                                  <img src="/s.gif" alt="Select" class="rightArrowIcon" title="Select"/>                           
+                               </apex:commandLink>
+                               <br/>                  
+                                <apex:commandLink style="text-decoration:none;Padding-top:10px;" onclick="return DeleteUser();" oncomplete="searchMain();">                               
+                                   
+                                   <img src="/s.gif" alt="Unselect" class="leftArrowIcon" title="Unselect"/>                                                     
+                               </apex:commandLink> 
+                               <apex:actionFunction action="{!removeFromUsers}" name="callDeleteUser" status="Processing" reRender="selUsers,selToAddUsers" oncomplete="searchMain();">
+                               </apex:actionFunction>
+                               
+                               <br/>
+                               Remove
+                               <br/>
+                           </td>               
+                            <td width="40%">
+                                
+                                <apex:selectList styleClass="clsSearch" id="selToAddUsers" value="{!strSelectedToAddUser}" multiselect="true" size="15" style="width:260px;">
+                                    <apex:selectOptions value="{!lstSelectedToAddUser}"> </apex:selectOptions>
+                                </apex:selectList>
+                            </td>
+                        </tr>
+                    </table> 
+                        </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                    </apex:pageBlockSection>
+                </td>
+            </tr>
+        </table>
+        </apex:outputPanel>
+       
+    </apex:pageBlock>
+   
+<iframe style="border : 1px solid #fff;"  src="c.na15.visual.force.com/apex/UI" width="700" height="400">
+</iframe>
+    
+
+
+
+</apex:form> 
+ <!------------- Start: Processing Div---------------------------------------->
+        <style>
+            .ProcessingBackground
+            {
+                background-color: black;
+                opacity: 0.50;
+                filter: alpha(opacity = 50);
+                width: 100%;
+                height: 100%;
+                position: fixed;
+                z-index: 8551;
+                top:0;
+                left:0;
+            }
+            .Processing
+            {
+                z-index: 8552;
+                left: 50%;
+                top: 50%;
+                text-align: center;
+                position: fixed;
+            }        
+        </style>
+        <div id="divProcessing" style="display:none;">
+            <div class="ProcessingBackground"></div>
+            <div class="Processing">
+                <apex:image alt="Processing" url="/img/loading32.gif" width="20" height="20" />
+            </div>
+        </div>  
+        <apex:actionStatus id="Processing" onstart="document.getElementById('divProcessing').style.display = '';" onstop="document.getElementById('divProcessing').style.display = 'none';">                            
+        </apex:actionStatus>
+        <!------------- End: Processing Div---------------------------------------->
+<script>
+    var selectChange='';
+    function DeleteFromGroup(){
+            
+        if(confirm('Are you sure want to Delete User From Selected Group(s)?'))
+        {
+            callDeleteFromGroup();
+        }
+        return false;
+    }
+    function DeleteUser(){
+            
+        if(confirm('Are you sure want to Delete Selected Group(s) containing User(s)?'))
+        {
+            callDeleteUser();
+        }
+        return false;
+    }
+    
+</script>
+</apex:page>

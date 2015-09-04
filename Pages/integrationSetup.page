@@ -1,0 +1,406 @@
+<apex:page title="Sms Integration"  standardController="Account_Settings__c" id="pager" sidebar="true" extensions="ctrl_integrationSetup" tabStyle="Account_Settings__c">
+
+<head>
+<title>Sms Integration</title>
+</head>
+
+<style>
+
+#mainDiv td{height : 22px;}
+
+.inputFields{
+    width : 230px;
+}
+
+.inputFields:focus{
+    width : 230px;
+    border : 2px solid #72BEE0;
+}
+
+.border1px {border: 1px solid black;} 
+ 
+    .tooltiptd{
+        padding-top : 5px ; 
+        width : 18px ; 
+        text-align : left; 
+    }    
+    
+    .tooltip:hover {
+        background-image : #FEFDB9; /*BG color is a must for IE6*/
+        text-align: right ;         
+        text-decoration:none;
+    } 
+    a.tooltip span {
+        display:none; 
+        padding:2px 3px;
+        margin : 23px 0px 0px -210px;
+        width:195px;
+    }
+    a.tooltip:hover span{
+        display:inline; 
+        text-align : left;
+        position:absolute; 
+        background:#FEFDB9; 
+        border:1px solid #FFA603; 
+        color:#000000;
+    }
+    
+    .toolttipimg:hover{  
+            background-image: url('/img/help/helpOrbs.gif');  
+            background-repeat: no-repeat; 
+            width: 16px;  
+            height: 15px;    
+            background-position: top right;  
+         
+        }  
+    .toolttipimg{  
+            background-image: url('/img/help/helpOrbs.gif');  
+            background-repeat: no-repeat;
+            padding-right : 3px; 
+            background-position : top left ; 
+            width: 16px;  
+            height: 15px;   
+        } 
+</style>
+<apex:form id="frm" >
+
+<apex:sectionHeader title="SMS" subtitle="Integration"  />
+
+<apex:pageMessages id="errorMessage"></apex:pageMessages>
+ 
+<apex:pageBlock title="{!if(isEditing , 'Edit Account' ,'Add Account' )}" id="main" tabStyle="Account_Settings__c"  >
+ 
+
+  
+  <apex:pageblockButtons >
+  <apex:commandButton tabindex="19" value="< Prev" action="{!prev}" rendered="{!step == 2 || step == 3}"   />
+  <apex:commandButton tabindex="20"  value="Cancel" action="{!okaygotit}" rendered="{!step!=0}"   />  
+  <apex:commandButton tabindex="21" value="Next >" action="{!next}" rendered="{!step == 1 || step == 2}" />  
+  <apex:commandButton tabindex="22" value="Okay, I got that!" action="{!okaygotit}" rendered="{!step == 0}" />  
+  <apex:commandButton tabindex="23" value="Save" action="{!save}" rendered="{!step == 3}"/ >
+  <apex:commandButton tabindex="24" value="{!if(isEditing == true ,if(editAcc.Active__c == False, 'Save & Activate' ,'Save & Deactivate'), 'Save & Activate')}" action="{!saveActivate}" rendered="{!step == 3}" />
+  </apex:pageblockButtons>
+  
+  <!-- Image one  width: 400px; height:44px; background:url() 0px 0px
+       Image two  width: 400px; height:44px; background:url() 0px 112px
+       Image three width: 400px; height:44px; background:url() 0px 44px
+  -->
+
+
+  <div id="mainDiv" >  <!-- MAIN DIV START-->
+  
+      <div style="width : 100% ; border : 1px dashed #DBDBDB; text-align : center; padding : 9px 0px 0px 0px ; margin-bottom: 10px; ">
+          <div style=" visibility:{!if(Step==0, 'Hidden;' ,'Visible;' )}  Margin:0px 0px 10px 10px; width: 400px; height:45px; background:url({!$Resource.steps}) {!if(step==1, ' 0px 0px' ,if(step==2, ' 0px 112px' , if(step==3,' 0px 44px' , ' 0px 0px')))};"></div>
+          <div style="float: right ; margin: -57px 8px 0px 0px;">
+              <div style="float:left;"><img title="Help" width="17px" height="17px" src="/img/msg_icons/info32.png" />
+              </div>
+              <div style="float:left;"> <a target="_blank" href="/apex/setupGuide" title="Setup guide." style="text-decoration: none;">&nbsp;<b>First time? Read our setup guide.</b></a>
+              </div>
+           </div>
+      </div>  
+        
+  <div style="width : 100% ; border : 1px dashed #DBDBDB; text-align : center; padding : 9px 0px 0px 0px ; margin-bottom: 10px; margin-top:-11px; "><!--TABLE CONTENT-->
+  
+<table  style="font-size:1.2em;border-spacing: 3px; margin-left: 9px; ">
+    
+    <!--//////////////////////////////STEP 0////////////////////////////////-->
+    <apex:outputPanel id="step0" rendered="{!step==0}">
+        <div style="text-align : center ; margin-top : -50px;"><!--<img src="{!$Resource.tick}" style="Margin:0px 0px 10px 10px; width: 50px; height:50px;background-color:none;  "/>-->
+        <font style="font-size:1em;"><b>{!if(isEditing== true ,'Change Telerivet WebHook URL to : ','Set Telerivet WebHook URL to : ')}</b></font><br/>
+        <b style="color : #1797C0; font-size: 1em; " > {!siteUrl}services/apexrest/inboundsms?id={!acc.Id}</b>
+        </div>
+    </apex:outputPanel>
+    <!--//////////////////////////////STEP 1////////////////////////////////-->
+    <apex:outputPanel id="Step1" rendered="{!step==1}">
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Salesforce Site URL</apex:outputLabel>
+            
+        </td>
+        <td class="tooltiptd">
+        <a class="tooltip" target="_blank"><img class="toolttipimg" src="/s.gif"  /><span>Your salesforce site url should use https, for example https://site.secure.force.com/  </span></a>
+        
+        </td>
+        
+        <td>
+            <apex:inputText tabindex="1" styleClass="inputFields" id="inputFields" value="{!siteUrl}" title="Telerivet account API key" /> <br/>
+        </td>        
+    </tr> 
+
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Telerivet API Key</apex:outputLabel>
+        </td>
+        <td class="tooltiptd">
+        
+        </td>
+        <td>
+            <apex:inputText tabindex="2" styleClass="inputFields" value="{!apikey }" title="Telerivet account API key" /> <br/>
+        </td>        
+    </tr>    
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Telerivet Project ID</apex:outputLabel>
+        </td>  
+        <td class="tooltiptd">        
+        </td>    
+        <td>
+            <apex:inputText tabindex="3"  styleClass="inputFields" value="{!projId }"  title="Telerivet Project Id" /> <br/>
+        </td>        
+    </tr>
+    
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Telerivet Secret</apex:outputLabel>
+        </td>
+        <td class="tooltiptd">        
+        </td> 
+        <td>
+            <apex:inputText tabindex="4"  styleClass="inputFields" value="{!secret }" title="Telerivet Secret key" /> <br/>
+        </td>        
+    </tr>    
+    
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Telerivet SMS Method</apex:outputLabel>
+        </td>
+        <td class="tooltiptd">  
+        <a class="tooltip" target="_blank"><img class="toolttipimg" src="/s.gif"  /><span>If the sms needs to be sent via a single phone only select type "Phone" or if you have configured a route select type "Route".</span></a>      
+        </td>         
+        <td >
+            <apex:selectRadio tabindex="5"  style="margin-top:-5px;" id="rdPhoneType" value="{!phoneType}" onclick="phoneandrouter();" >
+                <apex:selectOption itemValue="phone" itemlabel="Phone"/>
+                <apex:selectOption itemValue="route" itemlabel="Route"/>                
+              <!--  <apex:actionSupport event="onchange" status="Status" reRender="frm" / >--->
+            </apex:selectRadio>
+            <apex:actionFunction name="phoneandrouter" status="Status" action="{!phoneandroute}"  reRender="errorMessage,rdPhoneType,smsRoute,smsPhone,lblPhone,lblRoute"  />
+           
+        </td>             
+    </tr>
+    
+    <tr>
+        <td style="padding-top: 5px; text-align:right;">
+            <apex:outputLabel id="lblPhone" style="display:{!If(phoneType=='phone' && TrPhoneIds.Size >0 ,'visible','none')}" > Telerivet Phone </apex:outputLabel>
+            <apex:outputLabel id="lblRoute" style="display:{!If(phoneType=='route','visible','none')};  text-align:right;"  > Route Id</apex:outputLabel>
+        </td>    
+        <td class="tooltiptd">        
+        </td>           
+        <td>
+            <apex:selectList tabindex="6"  styleClass="inputFields" id="smsPhone" style="display:{!If(phoneType=='phone' &&  TrPhoneIds.Size >0,'visible','none')}"  size="1" value="{!phoneId}">            
+                    <apex:selectOptions value="{!TrPhoneIds}"></apex:selectOptions>
+            </apex:selectList> 
+            
+            <!--<apex:inputText  id="smsPhone" style="display:{!If(phoneType=='phone','visible','none')}"  value="{!phoneId}" title="Telerivet Phone Id" /> -->
+                        
+             <apex:inputText tabindex="6" styleClass="inputFields" id="smsRoute" style="display:{!If(phoneType=='route','visible','none')};"  value="{!routeId}" title="Telerivet Route Id" /> 
+        </td>  
+    </tr>
+
+    
+    </apex:outputPanel>
+    <!--//////////////////////////////STEP 2////////////////////////////////-->
+    <apex:outputPanel id="Step2" rendered="{!step==2}" >
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Outgoing SMS Object</apex:outputLabel>
+        </td> 
+        <td class="tooltiptd"></td>              
+        <td>
+            <apex:selectList tabindex="7" styleClass="inputFields"  size="1" value="{!outsmsObj }">            
+                <apex:selectOptions value="{!Name}"></apex:selectOptions>                
+                <apex:actionSupport event="onchange" status="Status" reRender="outUseRt,lblsmsRT,smsText,smsRec,smsSend,smsTime,smsRT" / > 
+            </apex:selectList>             
+        </td>         
+    </tr>
+    <tr >
+        <td style="padding-top : 5px; text-align:right;">            
+            
+            <apex:outputLabel id="lblsmsRT" > Select RecordType</apex:outputLabel>
+            
+        </td>
+        <td class="tooltiptd">        
+        </td> 
+        <td>
+            <!--<apex:inputCheckbox id="outUseRt" selected="{!if(OutRecordTypes.Size >= 2 , true, false )}"  value="{!outsmsisRT}"  style=" display : none ; margin-top : 5px;"> 
+            <apex:actionSupport event="onchange" status="Status" reRender="smsRT,lblsmsRT" / > 
+            </apex:inputCheckbox>-->
+
+            
+            
+            <apex:selectList tabindex="8"  styleClass="inputFields" disabled="{!if(OutRecordTypes.size>=2 , false ,true )}"  id="smsRT" size="1" value="{!outsmsRT}">            
+            <apex:selectOptions value="{!OutRecordTypes}"></apex:selectOptions>
+            </apex:selectList>
+                      
+        </td>
+    </tr>
+
+   <tr >
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Outgoing SMS Text Field</apex:outputLabel>
+        </td>  
+        <td class="tooltiptd">    
+        <a class="tooltip" target="_blank"><img class="toolttipimg" src="/s.gif"  /><span>Field where the out-going sms text will be stored.Supports only text type fields.</span></a>          
+        </td>             
+        <td>
+            <apex:selectList tabindex="9" styleClass="inputFields" id="smsText" size="1" value="{!outsmsText }">            
+                 <apex:selectOptions value="{!ObFields}"></apex:selectOptions>
+            </apex:selectList> <br/>
+        </td>  
+    </tr>
+    
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Outgoing SMS Recipient Field</apex:outputLabel>
+        </td>     
+        <td class="tooltiptd">     
+        <a class="tooltip" target="_blank"><img class="toolttipimg" src="/s.gif"  /><span>Field where out-going sms recipients number will be stored.Supports text or phone number type fields.</span></a>       
+        </td>          
+        <td>
+            <apex:selectList tabindex="10"  styleClass="inputFields" id="smsRec"  size="1" value="{!outsmsNum }">                    
+                 <apex:selectOptions value="{!ObFields}"></apex:selectOptions>
+            </apex:selectList> <br/>
+        </td>  
+    </tr>
+   
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Outgoing SMS Sender Field</apex:outputLabel>
+        </td>      
+        <td class="tooltiptd">    
+        <a class="tooltip" target="_blank"><img class="toolttipimg" src="/s.gif"  /><span>Field where out-going sms senders number will be stored.Supports only text or phone number type fields.</span></a>           
+        </td>         
+        <td>
+            <apex:selectList tabindex="11"  styleClass="inputFields" id="smsSend"  size="1" value="{!outsmsONum}">                    
+                 <apex:selectOptions value="{!ObFields}"></apex:selectOptions>
+            </apex:selectList> <br/>
+        </td>  
+    </tr>
+    
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Outgoing SMS Time Field</apex:outputLabel>
+        </td>      
+        <td class="tooltiptd">       
+        <a class="tooltip" target="_blank"><img class="toolttipimg" src="/s.gif"  /><span>Field where out-going sms date and time will be stored.Supports only Datetime type fields.</span></a>        
+        </td>         
+        <td>
+            <apex:selectList tabindex="12"  styleClass="inputFields" id="smsTime" size="1" value="{!outsmsTime }">                    
+                 <apex:selectOptions value="{!ObFields}"></apex:selectOptions>
+            </apex:selectList> <br/>
+        </td>  
+    </tr>
+    </apex:outputPanel>
+        <!--//////////////////////////////STEP 3////////////////////////////////-->
+    <apex:outputPanel id="Step3" rendered="{!step==3}" >
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Incoming SMS Object</apex:outputLabel>
+        </td>      
+        <td class="tooltiptd">        
+        </td>         
+        <td>
+            <apex:selectList tabindex="13"  styleClass="inputFields" size="1" value="{!insmsObj}">            
+                <apex:selectOptions value="{!Name}"></apex:selectOptions>                
+                    <apex:actionSupport event="onchange" status="Status" reRender="lblinsmsRT,ismsText,ismsRec,issmsSend,ismsTime,insmsRT" / >
+            </apex:selectList> <br/>
+        </td>         
+    </tr>
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel style="Display : none;" > Use a Record Type</apex:outputLabel>
+            
+            <apex:outputLabel id="lblinsmsRT" >Select Record Type </apex:outputLabel> <!--style="display:{!If(InRecordTypes.size>=2 ,'visible','none')}" >-->
+        </td>
+        <td class="tooltiptd"></td>         
+        <td><apex:selectList tabindex="14"  styleClass="inputFields" disabled="{!If(InRecordTypes.size>=2 ,false, true)}" id="insmsRT" size="1" value="{!insmsRT}">            
+                 <apex:selectOptions value="{!InRecordTypes}"></apex:selectOptions>
+            </apex:selectList>
+                    
+        </td>
+
+    </tr>
+
+   <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Incoming SMS Text Field</apex:outputLabel>
+        </td>      
+        <td class="tooltiptd">      
+        <a class="tooltip" target="_blank"><img class="toolttipimg" src="/s.gif"  /><span>Field where the in-coming sms text will be stored.Supports only text type fields.</span></a>          
+        </td>         
+        <td>
+            <apex:selectList tabindex="15"  styleClass="inputFields" id="ismsText" size="1" value="{!insmsText }">                          
+                <apex:selectOptions value="{!IbFields}"></apex:selectOptions>
+            </apex:selectList> <br/>
+        </td>  
+    </tr>
+    
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Incoming SMS Recipient Field</apex:outputLabel>
+        </td> 
+        <td class="tooltiptd">  
+        <a class="tooltip" target="_blank"><img class="toolttipimg" src="/s.gif"  /><span>Field where in-coming sms recipients number will be stored.Supports only text or phone number type fields.</span></a>             
+        </td>              
+        <td>
+            <apex:selectList tabindex="16"  styleClass="inputFields" id="ismsRec" size="1" value="{!insmsNum }">            
+                 <apex:selectOptions value="{!IbFields}"></apex:selectOptions>
+            </apex:selectList> <br/>
+        </td>  
+    </tr>
+    
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Incoming SMS Sender Field</apex:outputLabel>
+        </td>      
+        <td class="tooltiptd">     
+        <a class="tooltip" target="_blank"><img class="toolttipimg" src="/s.gif"  /><span>Field where in-coming sms senders number will be stored.Supports only text or phone number type fields.</span></a>              
+        </td>         
+        <td>
+            <apex:selectList tabindex="17"  styleClass="inputFields" id="issmsSend" size="1" value="{!insmsONum }">            
+                 <apex:selectOptions value="{!IbFields}"></apex:selectOptions>
+            </apex:selectList> <br/>
+        </td>  
+    </tr>    
+    
+    <tr>
+        <td style="padding-top : 5px; text-align:right;">
+            <apex:outputLabel > Incoming SMS Time Field</apex:outputLabel>
+        </td>      
+        <td class="tooltiptd">  
+        <a class="tooltip" target="_blank"><img class="toolttipimg" src="/s.gif"  /><span>Field where in-coming sms date and time will be stored.Supports only Datetime type fields.</span></a>         
+        </td>         
+        <td>
+            <apex:selectList tabindex="18"  styleClass="inputFields" id="ismsTime" size="1" value="{!insmsTime }">            
+                 <apex:selectOptions value="{!IbFields}"></apex:selectOptions>
+            </apex:selectList> <br/>
+        </td>  
+    </tr>
+    </apex:outputPanel>
+    
+</table>
+</div> <!-- TABLE CONTENT-->
+
+</div> <!-- MAIN DIV END-->
+
+</apex:pageBlock>
+
+<apex:actionStatus id="Status">
+              <apex:facet name="start">
+              
+                <div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;
+                       height: 100%;opacity:0.8;width:100%;"> 
+                    <div class="waitingHolder" style="top: 48%; width: 91px;"> <!--style="top: 74.2px; width: 91px;"-->
+                        <img class="waitingImage" src="/img/loading.gif" title="Please Wait..." />
+                        <span class="waitingDescription">Loading...</span>
+                    </div>
+                </div>
+                
+              </apex:facet>
+              
+              <apex:facet name="stop"> </apex:facet>
+                        
+</apex:actionStatus> 
+
+
+</apex:form>
+</apex:page>

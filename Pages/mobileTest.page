@@ -1,0 +1,27 @@
+<apex:page controller="ctrlMobileTest">
+
+<script>
+function geoArea(){
+
+alert();
+
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position){
+            lat = position.coords.latitude;
+            lon = position.coords.longitude;
+            
+            alert(lat + ' : ' + lon);     
+        });
+    } 
+}
+
+</script>
+    <apex:form >
+  <h1>Get your GEO!!!!</h1>
+  <input type="button" onClick="geoArea()" value="get geo"/> <br/>
+  
+  <apex:commandButton value="Redirect" action="{!redirect}" />
+  </apex:form>
+</apex:page>

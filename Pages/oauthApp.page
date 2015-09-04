@@ -1,0 +1,19 @@
+<apex:page controller="OAuthController" action="{!finalAuth}">
+<apex:form >
+<apex:pageBlock title="Social Application Authorization ">
+   <apex:pageBlockSection columns="1">
+    <apex:pageBlockSectionItem >
+       <apex:outputText value="Application"/>
+       <apex:selectList value="{!service}" size="1">
+         <apex:selectOptions value="{!serviceNames}"/>
+       </apex:selectList>
+    </apex:pageBlockSectionItem>
+    <apex:pageBlockSectionItem >
+      <apex:outputText rendered="{!message!=null}" value="{!message}"/>
+    </apex:pageBlockSectionItem>
+     <apex:commandLink action="{!doAuthorization}" value="Authorize" id="lnCommandLink" target="_blank" />
+     <apex:commandLink action="{!createSites}" value="Create" id="createSite" target="_blank" />
+  </apex:pageBlockSection>
+ </apex:pageBlock>
+</apex:form>
+</apex:page>

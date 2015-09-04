@@ -1,0 +1,88 @@
+<apex:page sidebar="true" tabStyle="Account_Settings__c" >
+
+    <head>
+    <title>Setup Guide</title>
+    <style>
+    #mainBody{
+        padding : 5px 0px 0px 13px;
+        font-face : helvetica , times new roman;
+    }
+
+    #mainBody img{
+        margin : 13px 0px 10px 20px;
+        border : 1px solid #004459;
+    }
+    
+    #mainBody li{
+        margin-top: 7px;
+        list-style-type : none;
+    }
+    
+    #mainBody i{
+        background-color : #F5DA81; /* #F2F2F2;*/
+        padding : 2px 2px 2px 2px;
+        font-style: normal;
+    }   
+
+    .noting{
+        border : 2px solid #FFBF00 ;
+        background-color : #F5DA81;
+        padding : 10px 10px 10px 10px; 
+        width : 76%;
+        height : 50px;
+    }
+
+    .anchor{
+        color : black;
+        text-decoration : none;
+    }
+    
+    </style>
+    </head>
+     
+<apex:pageBlock title="Setup Guide" id="main" tabStyle="Account_Settings__c"  >
+ 
+    <body>
+    <div id="mainBody"> 
+    <p><a class="anchor" href="#EndpointURL"><h4>Add Endpoint URL :</h4></a></p>
+    <ul>
+    <li><b>Step 1 :</b> Login to your Salesforce instance and goto <i>Administer | Security Controls | Remote Site Settings</i>.</li>
+    <li><b>Step 2 :</b> Click on <i>&nbsp;New Remote Site&nbsp;</i>.<br/><img width="600px" height="220px" src="{!$Resource.sms_app_new_remote_site}" /></li>
+    <li><b>Step 3 :</b> Fill in your Salesforce instace URL in <i>&nbsp;Remote Site URL&nbsp;</i> text box as shown below.<br/><img width="600px" height="350px" src="{!$Resource.sms_app_add_remote_site_details}" /></li>
+    <li><b>Step 4 :</b> Click <i>&nbsp;Save&nbsp;</i> and you're done.</li>
+    </ul>
+
+    <br/><br/>
+    <p><a class="anchor" href="#Salesforcesite"><h4>Setup Salesforce Site :</h4></a></p>
+    <ul>
+    <li><b>Step 1 :</b> Login to your Salesforce instance and goto <i>Build | Develop | Sites</i>.</li>
+    <li><b>Step 2 :</b> Enter desired domain name, check for availablility and <i>&nbsp;Register Domain&nbsp;</i>.<br/><img width="600px" height="220px" src="{!$Resource.sms_app_Sites_domain}" /></li>
+    <li><b>Step 3 :</b> Once registered click <i>&nbsp;New&nbsp;</i> next to site label.<br/><img width="600px" height="40px" src="{!$Resource.sms_app_new_site_label}" /></li>
+    <li><b>Step 4 :</b> Fill in the details and click <i>&nbsp;Save&nbsp;</i>.<br/><img width="600px" height="340px" src="{!$Resource.sms_app_enter_site_details}" /> </li>
+    <li><b>Step 5 :</b> Your site will show up like the one below<br/><img width="600px" height="70px" src="{!$Resource.sms_app_active_site}" /></li>
+    </ul>
+
+    <div class="noting">
+    <div style="float:left; height:30px;width: 35px; margin-top:2px;  background: url('/img/icon/ideabubble32.png') no-repeat ;">
+    </div>
+    <div style="float:left;margin-left:38px ;margin-top:-33px;width:100%;  line-height: 1.7em; ">
+    <b>Note :</b>On Developer Edition environments, your domain name will look something like <i>&nbsp;MyDomainName-developer-edition.na6.force.com&nbsp;</i>.
+    <br/>On production environments you will use the domain like this <i>wricbbam.secure.force.com</i>.
+    </div>
+    </div>  
+    
+    <br/><br/>
+    <p><a class="anchor" href="#Addclass"><h4>Give Access Permission to Apex Class :</h4></a></p>
+    <ul>
+    <li><b>Step 1 :</b> Once you have created a salesforce site; on salesforce <i>Site List</i> page click on the respective <i>Site Lable</i>.<br/><img width="600px" height="90px" src="{!$Resource.sms_app_edit_site}" /></li>
+    <li><b>Step 2 :</b> On the details page click on <i>&nbsp;Public Access Settings&nbsp;</i>.<br/><img width="600px" height="60px" src="{!$Resource.sms_app_publicaccessewttings  }" /></li>
+    <li><b>Step 3 :</b> Scroll down to the section <i>&nbsp;Enabled Apex Class Access&nbsp;</i> and click <i>&nbsp;Edit&nbsp;</i>.<br/><img width="600px" height="70px" src="{!$Resource.sms_app_edit_apex_classes}" /></li>
+    <li><b>Step 4 :</b> Under <i>&nbsp;Available Apex Classes&nbsp;</i> select and add class <i>&nbsp;telerivetInboundSmsController&nbsp;</i>, once added click <i>&nbsp;Save&nbsp;</i> to finish.<br/><img width="600px" height="370px" src="{!$Resource.sms_app_add_class_to_site}" /></li>
+    </ul>
+    </div>
+
+    </body>
+    
+    </apex:pageBlock>
+
+</apex:page>
