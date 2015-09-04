@@ -1,3 +1,0 @@
-<apex:page sidebar="false" showHeader="false" >
-    <chatter:feed id="chatterFeed" entityId="{!$CurrentPage.parameters.IndicatorId}"/>        
-</apex:page>

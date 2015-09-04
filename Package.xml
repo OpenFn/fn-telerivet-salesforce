@@ -1,102 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>*</members>
+        <members>MockHttpResponseGenerator</members>
+        <members>SortSelectOptions</members>
+        <members>Test_ctrl_integrationSetup</members>
+        <members>Test_packageClasses</members>
+        <members>ctrl_integrationSetup</members>
+        <members>telerivetInboundSmsController</members>
+        <members>telerivetOutboundSmsController</members>
+        <members>telerivetSmsSending</members>
+        <members>telerivetTriggerClass</members>
+        <members>triggerHandle</members>
         <name>ApexClass</name>
     </types>
     <types>
-        <members>*</members>
-        <name>ApexComponent</name>
-    </types>
-    <types>
-        <members>*</members>
+        <members>integrationSetup</members>
+        <members>setupGuide</members>
         <name>ApexPage</name>
     </types>
     <types>
-        <members>*</members>
+        <members>trgDeleteAsset</members>
         <name>ApexTrigger</name>
     </types>
     <types>
-        <members>*</members>
-        <members>Account</members>
-        <members>AccountContactRole</members>
         <members>Account_Settings__c</members>
-        <members>Activity</members>
-        <members>Area__c</members>
-        <members>Asset</members>
         <members>Basic_sms_object__c</members>
-        <members>Campaign</members>
-        <members>CampaignMember</members>
-        <members>Case</members>
-        <members>CaseContactRole</members>
-        <members>Catalog_Indicator__c</members>
-        <members>Contact</members>
-        <members>Contact_Role__c</members>
-        <members>ContentVersion</members>
-        <members>Contract</members>
-        <members>ContractContactRole</members>
-        <members>DuplicateRecordItem</members>
-        <members>DuplicateRecordSet</members>
-        <members>Event</members>
-        <members>FeedItem</members>
-        <members>Field__c</members>
-        <members>ForecastingCategoryMapping</members>
-        <members>Geographical_Area__c</members>
-        <members>Group__c</members>
-        <members>Household__c</members>
-        <members>Idea</members>
-        <members>Indicator__c</members>
-        <members>Job_Recurrence_Schedule__c</members>
-        <members>Lead</members>
-        <members>Line_Item__c</members>
-        <members>Listing__c</members>
-        <members>Location__c</members>
-        <members>Log_Item__c</members>
-        <members>Macro</members>
-        <members>MacroAction</members>
-        <members>MacroInstruction</members>
-        <members>OAuth_Service__c</members>
-        <members>Opportunity</members>
-        <members>OpportunityCompetitor</members>
-        <members>OpportunityContactRole</members>
-        <members>OpportunityLineItem</members>
-        <members>Page__c</members>
-        <members>PartnerRole</members>
-        <members>Person__c</members>
-        <members>Pricebook2</members>
-        <members>PricebookEntry</members>
-        <members>Product2</members>
-        <members>Product_Type__c</members>
-        <members>Program__c</members>
-        <members>Project__c</members>
-        <members>Reporting_Period__c</members>
-        <members>Result__c</members>
-        <members>Site</members>
-        <members>Site__c</members>
         <members>Sms_Reports__c</members>
         <members>Sms_Test__c</members>
-        <members>SocialPersona</members>
-        <members>Solution</members>
-        <members>StreamingChannel</members>
-        <members>Survey__c</members>
-        <members>Task</members>
         <members>Telerivet_Tracking__c</members>
-        <members>Terms_Accepted__c</members>
-        <members>Touchpoint__c</members>
-        <members>Transaction__c</members>
-        <members>TriggerHandler__c</members>
-        <members>User</members>
-        <members>UserProvisioningRequest</members>
-        <members>UserTokens__c</members>
-        <members>Volunteer_Hours__c</members>
-        <members>Volunteer_Job__c</members>
-        <members>Volunteer_Recurrence_Schedule__c</members>
-        <members>Volunteer_Shift__c</members>
-        <members>Volunteers_Settings__c</members>
         <name>CustomObject</name>
     </types>
     <types>
-        <members>*</members>
+        <members>Account_Settings__c-SMS Setting Layout</members>
+        <members>Basic_sms_object__c-SMS Layout</members>
+        <members>Sms_Reports__c-Sms Report Layout</members>
+        <members>Sms_Test__c-Sms Test Layout</members>
+        <members>Telerivet_Tracking__c-Telerivet Tracking Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>sms_app_Sites_domain</members>
+        <members>sms_app_active_site</members>
+        <members>sms_app_add_class_to_site</members>
+        <members>sms_app_add_remote_site_details</members>
+        <members>sms_app_edit_apex_classes</members>
+        <members>sms_app_edit_site</members>
+        <members>sms_app_enter_site_details</members>
+        <members>sms_app_new_remote_site</members>
+        <members>sms_app_new_site_label</members>
+        <members>sms_app_publicaccessewttings</members>
+        <members>steps</members>
+        <members>tick</members>
         <name>StaticResource</name>
     </types>
     <version>29.0</version>

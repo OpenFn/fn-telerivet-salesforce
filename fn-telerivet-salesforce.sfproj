@@ -1,0 +1,248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{e1734249-2dca-4c2b-b161-c04923d7641e}</ProjectGuid>
+    <Login>td@sms.org</Login>
+    <Password>1foGW84e8sFtH9ATryJrsXmLV4hh4vv6Hbe2Zo3ZsYTZrTm7+4n1rUQFhkBOYj+C</Password>
+    <SecurityToken>I0UHkvSAdQ7z2sqIf253ILi2i0RDKwSF4+tBRNF70zl8vlc/R/iqxeVjc2Vv416LmTnM2sPXbkwHPdjadXJ4Dw==</SecurityToken>
+    <Domain />
+    <Environment>0</Environment>
+    <ApexVersion>29.0</ApexVersion>
+    <Name>fn-telerivet-salesforce</Name>
+    <AssemblyName>fn-telerivet-salesforce</AssemblyName>
+    <RootNamespace>fn-telerivet-salesforce</RootNamespace>
+    <ProjectVersion>1</ProjectVersion>
+    <PackageVersion>0.22.8.4</PackageVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <ItemGroup>
+    <Folder Include="AnonymousApex" />
+    <Folder Include="Classes" />
+    <Folder Include="Layouts" />
+    <Folder Include="Objects" />
+    <Folder Include="Pages" />
+    <Folder Include="Soql" />
+    <Folder Include="StaticResources" />
+    <Folder Include="Triggers" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\ctrl_integrationSetup.cls">
+      <SubType>Class</SubType>
+      <Id>01pi0000005rJmaAAE</Id>
+      <LastModifiedDateUtcTicks>130494898990000000</LastModifiedDateUtcTicks>
+      <Hash>vOaEcZ/TNDpHNMe5c+xjgw==</Hash>
+    </Compile>
+    <Compile Include="Classes\MockHttpResponseGenerator.cls">
+      <SubType>Class</SubType>
+      <Id>01pi0000005rnEnAAI</Id>
+      <LastModifiedDateUtcTicks>130481061430000000</LastModifiedDateUtcTicks>
+      <Hash>29yenOH4XajXsheKHbBxmw==</Hash>
+    </Compile>
+    <Compile Include="Classes\SortSelectOptions.cls">
+      <SubType>Class</SubType>
+      <Id>01pi0000005o051AAA</Id>
+      <LastModifiedDateUtcTicks>130718326540000000</LastModifiedDateUtcTicks>
+      <Hash>5k9wl4JWj1ohyo71g/1sFA==</Hash>
+    </Compile>
+    <Compile Include="Classes\telerivetInboundSmsController.cls">
+      <SubType>Class</SubType>
+      <Id>01pi0000005rOEPAA2</Id>
+      <LastModifiedDateUtcTicks>130479910220000000</LastModifiedDateUtcTicks>
+      <Hash>AjhfMf2La7zQRG25k0rV/A==</Hash>
+    </Compile>
+    <Compile Include="Classes\telerivetOutboundSmsController.cls">
+      <SubType>Class</SubType>
+      <Id>01pi0000005rOAwAAM</Id>
+      <LastModifiedDateUtcTicks>130481005740000000</LastModifiedDateUtcTicks>
+      <Hash>3Vny4WybEXo/ShtN/0qLPw==</Hash>
+    </Compile>
+    <Compile Include="Classes\telerivetSmsSending.cls">
+      <SubType>Class</SubType>
+      <Id>01pi0000005rhedAAA</Id>
+      <LastModifiedDateUtcTicks>130480621180000000</LastModifiedDateUtcTicks>
+      <Hash>R+2b6B45FKN5YRVlfbaD6w==</Hash>
+    </Compile>
+    <Compile Include="Classes\telerivetTriggerClass.cls">
+      <SubType>Class</SubType>
+      <Id>01pi0000005rhf7AAA</Id>
+      <LastModifiedDateUtcTicks>130480651290000000</LastModifiedDateUtcTicks>
+      <Hash>dXAtvEYbucA88Qy63Z0F1w==</Hash>
+    </Compile>
+    <Compile Include="Classes\Test_ctrl_integrationSetup.cls">
+      <SubType>Class</SubType>
+      <Id>01pi0000005nxMRAAY</Id>
+      <LastModifiedDateUtcTicks>130481061230000000</LastModifiedDateUtcTicks>
+      <Hash>Ez8foAcD0KRodZCKmbpmdQ==</Hash>
+    </Compile>
+    <Compile Include="Classes\Test_packageClasses.cls">
+      <SubType>Class</SubType>
+      <Id>01pi0000005rkIqAAI</Id>
+      <LastModifiedDateUtcTicks>130495336380000000</LastModifiedDateUtcTicks>
+      <Hash>WsI/qhOwLoFkg5L4VlAvig==</Hash>
+    </Compile>
+    <Compile Include="Classes\triggerHandle.cls">
+      <SubType>Class</SubType>
+      <Id>01pi0000005qJXTAA2</Id>
+      <LastModifiedDateUtcTicks>130481061270000000</LastModifiedDateUtcTicks>
+      <Hash>kvdUlf9gWBt4OKGY2Y0ttA==</Hash>
+    </Compile>
+    <Compile Include="Pages\integrationSetup.page">
+      <SubType>Page</SubType>
+      <Id>066i0000004MQHRAA4</Id>
+      <LastModifiedDateUtcTicks>130504814930000000</LastModifiedDateUtcTicks>
+      <Hash>vXpwKYvEFZitu+r2NQOG0g==</Hash>
+    </Compile>
+    <Compile Include="Pages\setupGuide.page">
+      <SubType>Page</SubType>
+      <Id>066i00000046ppWAAQ</Id>
+      <LastModifiedDateUtcTicks>130486647600000000</LastModifiedDateUtcTicks>
+      <Hash>pn7noE1Z6+2spO2LLS8DTg==</Hash>
+    </Compile>
+    <Compile Include="Triggers\trgDeleteAsset.trigger">
+      <SubType>Trigger</SubType>
+      <Id>01qi0000000Bs3PAAS</Id>
+      <LastModifiedDateUtcTicks>130481007060000000</LastModifiedDateUtcTicks>
+      <Hash>jFCFteJ8OFnyW82EOvIm2A==</Hash>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Layouts\Account_Settings__c-SMS Setting Layout.layout">
+      <SubType>Layout</SubType>
+      <Id>00hi0000002t4XXAAY</Id>
+      <LastModifiedDateUtcTicks>130488339850000000</LastModifiedDateUtcTicks>
+      <Hash>yKTxlGe/9IdY3zCDz5dxqQ==</Hash>
+    </Object>
+    <Object Include="Layouts\Basic_sms_object__c-SMS Layout.layout">
+      <SubType>Layout</SubType>
+      <Id>00hi0000002sMUNAA2</Id>
+      <LastModifiedDateUtcTicks>130488340660000000</LastModifiedDateUtcTicks>
+      <Hash>RJalIZSIWBm0bGHDCVVVGw==</Hash>
+    </Object>
+    <Object Include="Layouts\Sms_Reports__c-Sms Report Layout.layout">
+      <SubType>Layout</SubType>
+      <Id>00hi0000002t4YfAAI</Id>
+      <LastModifiedDateUtcTicks>130450460190000000</LastModifiedDateUtcTicks>
+      <Hash>Z5xq9XsE5Uf41QiAbNpa3w==</Hash>
+    </Object>
+    <Object Include="Layouts\Sms_Test__c-Sms Test Layout.layout">
+      <SubType>Layout</SubType>
+      <Id>00hi00000035SurAAE</Id>
+      <LastModifiedDateUtcTicks>130482318480000000</LastModifiedDateUtcTicks>
+      <Hash>KkTdMctulgxIqhY5AHXL0A==</Hash>
+    </Object>
+    <Object Include="Layouts\Telerivet_Tracking__c-Telerivet Tracking Layout.layout">
+      <SubType>Layout</SubType>
+      <Id>00hi0000002t8cGAAQ</Id>
+      <LastModifiedDateUtcTicks>130464445680000000</LastModifiedDateUtcTicks>
+      <Hash>QW9dix8fad8OeCD0orrshA==</Hash>
+    </Object>
+    <Object Include="Objects\Account_Settings__c.object">
+      <SubType>Object</SubType>
+      <Id>01Ii0000001WCDZEA4</Id>
+      <LastModifiedDateUtcTicks>130858738640726757</LastModifiedDateUtcTicks>
+      <Hash>s2geBGnLXeJx8YxMzqniQA==</Hash>
+    </Object>
+    <Object Include="Objects\Basic_sms_object__c.object">
+      <SubType>Object</SubType>
+      <Id>01Ii0000001VnIXEA0</Id>
+      <LastModifiedDateUtcTicks>130858738640726757</LastModifiedDateUtcTicks>
+      <Hash>vP1wE2ax8JI3X2iwhpP/hw==</Hash>
+    </Object>
+    <Object Include="Objects\Sms_Reports__c.object">
+      <SubType>Object</SubType>
+      <Id>01Ii0000001WCEXEA4</Id>
+      <LastModifiedDateUtcTicks>130858738640726757</LastModifiedDateUtcTicks>
+      <Hash>gl0QW2CUCMT4MgLSe51m+A==</Hash>
+    </Object>
+    <Object Include="Objects\Sms_Test__c.object">
+      <SubType>Object</SubType>
+      <Id>01Ii0000001eaN0EAI</Id>
+      <LastModifiedDateUtcTicks>130858738640726757</LastModifiedDateUtcTicks>
+      <Hash>FaK8UoFvVs2QRxndLLAtqA==</Hash>
+    </Object>
+    <Object Include="Objects\Telerivet_Tracking__c.object">
+      <SubType>Object</SubType>
+      <Id>01Ii0000001WFtmEAG</Id>
+      <LastModifiedDateUtcTicks>130858738640726757</LastModifiedDateUtcTicks>
+      <Hash>7Esc7J067seBPthUaaZktQ==</Hash>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Static Include="StaticResources\sms_app_active_site.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i0000000OW4oAAG</Id>
+      <LastModifiedDateUtcTicks>130484574500000000</LastModifiedDateUtcTicks>
+      <Hash>YD2Q6+ZEQehKc1OPo2EPkg==</Hash>
+    </Static>
+    <Static Include="StaticResources\sms_app_add_class_to_site.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i0000000OW4jAAG</Id>
+      <LastModifiedDateUtcTicks>130484573750000000</LastModifiedDateUtcTicks>
+      <Hash>uAfnEvmeL5bms8/yaEVMQA==</Hash>
+    </Static>
+    <Static Include="StaticResources\sms_app_add_remote_site_details.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i0000000OW4eAAG</Id>
+      <LastModifiedDateUtcTicks>130484573220000000</LastModifiedDateUtcTicks>
+      <Hash>0N6KW4zDbSQ1eqkTlP7KLA==</Hash>
+    </Static>
+    <Static Include="StaticResources\sms_app_edit_apex_classes.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i0000000OW4ZAAW</Id>
+      <LastModifiedDateUtcTicks>130484572510000000</LastModifiedDateUtcTicks>
+      <Hash>N6WH/xX6WMTBNbQk/8jk1A==</Hash>
+    </Static>
+    <Static Include="StaticResources\sms_app_edit_site.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i0000000OW4UAAW</Id>
+      <LastModifiedDateUtcTicks>130484571610000000</LastModifiedDateUtcTicks>
+      <Hash>n8tB9bRebfNc+ymjr7Lo0A==</Hash>
+    </Static>
+    <Static Include="StaticResources\sms_app_enter_site_details.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i0000000OW4PAAW</Id>
+      <LastModifiedDateUtcTicks>130484569630000000</LastModifiedDateUtcTicks>
+      <Hash>ycvqRcjer+dC7lYioooKKg==</Hash>
+    </Static>
+    <Static Include="StaticResources\sms_app_new_remote_site.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i0000000OW4KAAW</Id>
+      <LastModifiedDateUtcTicks>130484569390000000</LastModifiedDateUtcTicks>
+      <Hash>m/HkNSDAFTSaRe8hbte0IQ==</Hash>
+    </Static>
+    <Static Include="StaticResources\sms_app_new_site_label.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i0000000OW4FAAW</Id>
+      <LastModifiedDateUtcTicks>130484561500000000</LastModifiedDateUtcTicks>
+      <Hash>EPnH4FEE15iI5Z13Vy1YNA==</Hash>
+    </Static>
+    <Static Include="StaticResources\sms_app_publicaccessewttings.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i0000000OW4AAAW</Id>
+      <LastModifiedDateUtcTicks>130484548060000000</LastModifiedDateUtcTicks>
+      <Hash>/YWJKDbmPv5LmhUugE/ljw==</Hash>
+    </Static>
+    <Static Include="StaticResources\sms_app_Sites_domain.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i0000000OW45AAG</Id>
+      <LastModifiedDateUtcTicks>130484547580000000</LastModifiedDateUtcTicks>
+      <Hash>Aa4Bvo61Y9A206WKkXwaEQ==</Hash>
+    </Static>
+    <Static Include="StaticResources\steps.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i00000003gCHAAY</Id>
+      <LastModifiedDateUtcTicks>130457677830000000</LastModifiedDateUtcTicks>
+      <Hash>k1G3dLzYkagdKJkTLnRTOg==</Hash>
+    </Static>
+    <Static Include="StaticResources\tick.png">
+      <SubType>StaticResource</SubType>
+      <Id>081i00000003gUkAAI</Id>
+      <LastModifiedDateUtcTicks>130459296260000000</LastModifiedDateUtcTicks>
+      <Hash>A0aVaxuEgQr1DoKeV5rdtw==</Hash>
+    </Static>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Build.targets" />
+</Project>
